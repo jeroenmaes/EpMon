@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "EpMon";
+}
+
+@model EpMon.Web.Models.EndpointsOverview
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Endpoints <small class="text-muted" style="">@Model.EndpointsByTag.Sum(x => x.Value.Count) monitored (@DateTime.Now)</small></h2>
+        @{
+            if (@Model.UnHealthyEndpoints)
+            {
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <h5 class="panel-title">
+                            Not all endpoints are healthy
+                            <small class="pull-right">Refreshes every 2 minutes</small>
+                        </h5>
+                    </div>                
+                </div>
+            }
+        }
+
+        @foreach (var tag in Model.EndpointsByTag)
+        {
+            <h3>@tag.Key <small class="text-muted" style="">(@tag.Value.Count)</small></h3>
+
+            <table class="table">
+
+                <thead>
+                <tr>
+                    <td>Url</td>
+                    @*<td>Tag</td>*@
+                    <td>Type</td>
+                    <td>Interval</td>
+                    <td>Healthy</td>
+                    <td>Last Checked</td>
+                </tr>
+                </thead>
+
+                @foreach (var endpoint in tag.Value)
+                {
+                    var lastStat = endpoint.Stats.FirstOrDefault();
+                <tr>
+
+                    <td>
+                        @Html.ActionLink(endpoint.Url, "EndpointStats", new { id = endpoint.Id }, null)
+                    </td>
+                    @*<td>@endpoint.Tags</td>*@
+                    <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
+                    <td>@endpoint.CheckInterval min</td>
+                    @if (lastStat != null)
+                    {
+                        if (!lastStat.IsHealthy)
+                        {
+                            <td class="danger">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                           </td>
+                        }
+                        else
+                        {
+                            <td class="success">
+                                <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                            </td>
+                        }
+                    }
+                    <td>
+                        @if (lastStat != null)
+                        {
+                            @lastStat.TimeStamp.ToLocalTime()
+                        }
+                    </td>
+                </tr>
+                }
+            </table>
+
+        }
+    </div>
+
+</div>
