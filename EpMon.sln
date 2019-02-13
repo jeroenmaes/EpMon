@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Data", "src\EpMon.Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Tests", "src\EpMon.Tests\EpMon.Tests.csproj", "{9AE5D942-73FB-45FA-8D12-2F542FCDD09C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Web.Core", "src\EpMon.Web.Core\EpMon.Web.Core\EpMon.Web.Core.csproj", "{C15381AC-27C4-4FCC-B9B9-7ACBF7544666}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Web", "src\EpMon.Web\EpMon.Web.csproj", "{C15381AC-27C4-4FCC-B9B9-7ACBF7544666}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
