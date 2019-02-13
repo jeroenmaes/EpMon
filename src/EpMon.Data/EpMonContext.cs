@@ -6,11 +6,12 @@ using EpMon.Data.Entities;
 
 namespace EpMon.Data
 {
-    class EpMonContext : DbContext
+    public class EpMonContext : DbContext
     {
         public EpMonContext() : base("name=EpMonContext")
         {
-            Database.SetInitializer<EpMonContext>(new CreateDatabaseIfNotExists<EpMonContext>());
+            //Database.SetInitializer<EpMonContext>(new CreateDatabaseIfNotExists<EpMonContext>());
+            Database.SetInitializer(new EpMonInitializer());
             
         }
         
