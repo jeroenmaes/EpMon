@@ -1,0 +1,259 @@
+﻿@{
+    ViewBag.Title = "EpMon - " + Model.Endpoint.Url;
+}
+
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using X.PagedList;
+@using X.PagedList.Mvc.Core
+
+@model EpMon.Web.Models.EndpointDetails
+
+<link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<div class="row">
+    <div class="col-md-12">
+        <h2>Statistics</h2>
+
+        <table class="table table">
+            <tr>
+                <td>Endpoint</td>
+                <td><a href="@Model.Endpoint.Url" target="_blank">@Model.Endpoint.Url</a></td>
+            </tr>
+
+            @{
+                if (Model.LastStat != null)
+                {
+                    <tr>
+                        <td>Healthy</td>
+                        <td>@Model.LastStat.IsHealthy</td>
+                    </tr>
+                    <tr>
+                        <td>HttpStatus</td>
+                        <td>@Model.LastStat.Status</td>
+                    </tr>
+                    <tr>
+                        <td>Last Checked</td>
+                        <td>@Model.LastStat.TimeStamp.ToLocalTime()</td>
+                    </tr>
+                }
+            }
+
+            <tr>
+                <td>Response Time</td>
+                <td>@Model.ResponseTime ms</td>
+            </tr>
+            <tr>
+                <td>Tag</td>
+                <td>@Model.Endpoint.Tags</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>@Model.Endpoint.CheckType.ToString().Replace("Check", "")</td>
+            </tr>
+            <tr>
+                <td>Interval</td>
+                <td>@Model.Endpoint.CheckInterval min</td>
+            </tr>
+        </table>
+
+        <h3>Uptime <small class="text-muted" style="">last 24 hours</small></h3>
+        <canvas id="uptime-chart" height="75" style="width: 100%; height: 75px"></canvas>
+
+        <h3>Response Time <small class="text-muted" style="">last 24 hours</small></h3>
+        <canvas id="response-time-chart" height="75" style="width: 100%; height: 75px"></canvas>
+
+        <h3>Response Data <small class="text-muted" style="">last 24 hours</small></h3>
+        <table class="table table-striped table-bordered">
+
+            <thead>
+                <tr>
+                    <td>Healthy</td>
+                    <td>HttpStatus</td>
+                    <td>Timestamp</td>
+                    <td>Response Time</td>
+                    <td>Message</td>
+                </tr>
+            </thead>
+
+            @foreach (var stat in Model.Stats)
+            {
+                var jsonString = "";
+
+                try
+                {
+                    jsonString = JToken.Parse(@stat.Message).ToString(Formatting.Indented);
+                }
+                catch (Exception /*e*/)
+                {
+                    //non json data
+                    //jsonString = @stat.Message;
+
+                    if (!string.IsNullOrWhiteSpace(@stat.Message) && @stat.Message.Length >= 100)
+                    {
+                        jsonString = @stat.Message.Substring(0, 100);
+                    }
+                }
+
+                <tr>
+                    <td>@stat.IsHealthy</td>
+                    <td>@stat.Status</td>
+                    <td>@stat.TimeStamp.ToLocalTime()</td>
+                    <td>@stat.ResponseTime</td>
+                    <td>@jsonString</td>
+                </tr>
+            }
+        </table>
+
+        @Html.PagedListPager((IPagedList)Model.Stats, page => Url.Action("EndpointStats", new { page }))
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://momentjs.com/downloads/moment.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
+<script>
+    $(document).ready(function () {
+
+        var minTime = 1438185089000;
+        var series = JSON.parse('@Model.UptimeData')
+            .map(function(x) { return {t: moment.utc(x[0]), y: x[1]} });
+
+        Chart.defaults.global.defaultFontColor = '#8e9497';
+        Chart.defaults.global.defaultFontFamily = "'proxima-nova', 'sans-serif'";
+
+        var unknownData = [];
+        if (minTime > series[0].t) {
+            unknownData = [{t: 1438185089000, y: 1}, {t: series[0].t, y: 1}];
+            series[0].t = Math.max(series[0].t, minTime);
+        }
+
+        new Chart(document.getElementById('uptime-chart'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    data: unknownData,
+                    showLine: true,
+                    steppedLine: 'before',
+                    fill: 'start',
+                    backgroundColor: '#bbbbbb',
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 0,
+                    pointRadius: 0,
+                    pointHitRadius: 0,
+                }, {
+                    data: series,
+                    showLine: true,
+                    steppedLine: 'before',
+                    fill: 'start',
+                    backgroundColor: '#92ebb1',
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 0,
+                    pointBackgroundColor: 'rgba(0, 116, 206, 0.5)',
+                    pointRadius: 0,
+                    pointHitRadius: 50,
+                }, {
+                    data: [{ t: series[0].t, y: 1 }, { t: series[series.length - 1].t, y: 1 }],
+                    showLine: true,
+                    steppedLine: 'before',
+                    fill: 'start',
+                    backgroundColor: '#ce0500',
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 0,
+                    pointRadius: 0,
+                    pointHitRadius: 0,
+                }],
+            },
+            options: {
+                legend: {
+                    display: false,
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (x) {
+                            return x.xLabel + ' - ' + (x.yLabel == 1 ? 'UP' : 'DOWN');
+                        },
+                    },
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                    }],
+                    yAxes: [{
+                        display: false,
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 1,
+                        }
+                    }]
+                }
+            }
+        });
+    });
+</script>
+<script>
+$(document).ready(function() {
+
+    var series = JSON.parse('[["Response Time", @Model.ResponseTimeData]]');
+    var colors = ['124, 180, 236', '124, 180, 36'];
+
+    var datasets = series.map(function(ser, idx) {
+        var name = ser[0];
+        var data = ser[1].map(function(x) { return {t: moment.utc(x[0]), y: x[1]} });
+        return {
+            label: name,
+            data: data,
+            showLine: true,
+            lineTension: 0,
+            fill: 'start',
+            backgroundColor: 'rgba(' + colors[idx] + ', 0.25)',
+            borderColor: 'rgba(' + colors[idx] + ', 1)',
+            borderWidth: 2,
+            pointRadius: data.length <= 75 ? 2 : 0,
+            pointBackgroundColor: 'rgba(' + colors[idx] + ', 1)',
+            pointHitRadius: 5,
+        };
+    });
+
+    Chart.defaults.global.defaultFontColor = '#8e9497';
+    Chart.defaults.global.defaultFontFamily = "'proxima-nova', 'sans-serif'";
+
+    new Chart(document.getElementById('response-time-chart'), {
+        type: 'scatter',
+        data: {datasets: datasets},
+        options: {
+            legend: {
+                display: (datasets.length > 1),
+                position: 'bottom',
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(x) {
+                        return x.xLabel + ' - ' + x.yLabel + 'ms';
+                    },
+                },
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    //time: {
+                    //    min: 1543649810000,
+                    //    max: 1543736210000
+                    //},
+                    gridLines: {
+                        drawOnChartArea: true,
+                    },
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        callback: function(value, index, values) {
+                            return value + 'ms';
+                        }
+                    }
+                }]
+            }
+        }
+    });
+});
+</script>

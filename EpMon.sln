@@ -2,15 +2,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpMon", "src\EpMon\EpMon.csproj", "{D0F1A0C8-7B7D-4119-9281-532394657896}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon", "src\EpMon\EpMon.csproj", "{D0F1A0C8-7B7D-4119-9281-532394657896}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpMon.Monitor", "src\EpMon.Monitor\EpMon.Monitor.csproj", "{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Monitor", "src\EpMon.Monitor\EpMon.Monitor.csproj", "{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpMon.Data", "src\EpMon.Data\EpMon.Data.csproj", "{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Data", "src\EpMon.Data\EpMon.Data.csproj", "{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpMon.Web", "src\EpMon.Web\EpMon.Web.csproj", "{074DFF12-B973-47A5-820C-3622EDD24864}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpMon.Tests", "src\EpMon.Tests\EpMon.Tests.csproj", "{9AE5D942-73FB-45FA-8D12-2F542FCDD09C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Tests", "src\EpMon.Tests\EpMon.Tests.csproj", "{9AE5D942-73FB-45FA-8D12-2F542FCDD09C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpMon.Web.Core", "src\EpMon.Web.Core\EpMon.Web.Core\EpMon.Web.Core.csproj", "{C15381AC-27C4-4FCC-B9B9-7ACBF7544666}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,18 +33,21 @@ Global
 		{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{074DFF12-B973-47A5-820C-3622EDD24864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{074DFF12-B973-47A5-820C-3622EDD24864}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{074DFF12-B973-47A5-820C-3622EDD24864}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{074DFF12-B973-47A5-820C-3622EDD24864}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9AE5D942-73FB-45FA-8D12-2F542FCDD09C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9AE5D942-73FB-45FA-8D12-2F542FCDD09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AE5D942-73FB-45FA-8D12-2F542FCDD09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AE5D942-73FB-45FA-8D12-2F542FCDD09C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C15381AC-27C4-4FCC-B9B9-7ACBF7544666}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C15381AC-27C4-4FCC-B9B9-7ACBF7544666}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C15381AC-27C4-4FCC-B9B9-7ACBF7544666}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C15381AC-27C4-4FCC-B9B9-7ACBF7544666}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DE203AA7-C72E-4FF9-BB3C-CBD102E2D48B}
-	EndGlobalSection	
+	EndGlobalSection
 EndGlobal
