@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using EpMon.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EpMon.Data
 {
@@ -86,7 +87,26 @@ namespace EpMon.Data
                     {Url = url, CheckInterval = checkInterval, Tags = tags, CheckType = CheckType.AvailabilityCheck});
                 db.SaveChanges();
 
-                return result.Id;
+                return result.Entity.Id;
+            }
+        }
+
+        public void CustomSeed()
+        {
+            using (var context = new EpMonContext())
+            {
+                var testEndpoint = context.Endpoints.FirstOrDefault(b => b.Url == @"http:\\blog.jeroenmaes.eu");
+                if (testEndpoint == null)
+                {
+                    context.Endpoints.Add(new Endpoint
+                    {
+                        CheckInterval = 5,
+                        CheckType = CheckType.AvailabilityCheck,
+                        Tags = "Personal",
+                        Url = @"http:\\blog.jeroenmaes.eu"
+                    });
+                }
+                context.SaveChanges();
             }
         }
     }

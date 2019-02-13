@@ -1,33 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure.Annotations;
-using System.Data.Entity.ModelConfiguration;
+using System.Configuration;
+using System.Linq;
 using EpMon.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EpMon.Data
 {
     public class EpMonContext : DbContext
     {
-        public EpMonContext() : base("name=EpMonContext")
+        public EpMonContext() : base()
         {
-            //Database.SetInitializer<EpMonContext>(new CreateDatabaseIfNotExists<EpMonContext>());
-            Database.SetInitializer(new EpMonInitializer());
-            
+            Database.Migrate();
         }
         
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["EpMonContext"].ConnectionString);
+        }
+
         public DbSet<Endpoint> Endpoints { get; set; }
         public DbSet<EndpointStat> EndpointStats { get; set; }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            ConfigureEndpointStats(modelBuilder.Entity<EndpointStat>());
-        }
-        
-        private void ConfigureEndpointStats(EntityTypeConfiguration<EndpointStat> config)
-        {
-            
-        }
     }
+
 }

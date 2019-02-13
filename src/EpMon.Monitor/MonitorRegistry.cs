@@ -10,6 +10,8 @@ namespace EpMon.Monitor
         public MonitorRegistry()
         {
             var repo = new EpMonRepository();
+            repo.CustomSeed();
+
             var endpoints = repo.GetEndpoints().ToList();
 
             NonReentrantAsDefault();
