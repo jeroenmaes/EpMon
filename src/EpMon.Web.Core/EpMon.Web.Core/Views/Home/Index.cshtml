@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h2>Endpoints <small class="text-muted" style="">@Model.EndpointsByTag.Sum(x => x.Value.Count) monitored (@DateTime.Now)</small></h2>
+        <h2 class="mb-5">Endpoints <small class="text-muted" style="">@Model.EndpointsByTag.Sum(x => x.Value.Count) monitored (@DateTime.Now)</small></h2>
         @{
             if (@Model.UnHealthyEndpoints)
             {
@@ -29,12 +29,12 @@
 
                 <thead>
                 <tr>
-                    <td>Url</td>
+                    <th scope="col">Url</th>
                     @*<td>Tag</td>*@
-                    <td>Type</td>
-                    <td>Interval</td>
-                    <td>Healthy</td>
-                    <td>Last Checked</td>
+                    <th scope="col">Type</th>
+                    <th scope="col">Interval</th>
+                    <th scope="col">Healthy</th>
+                    <th scope="col">Last Checked</th>
                 </tr>
                 </thead>
 
@@ -43,7 +43,7 @@
                     var lastStat = endpoint.Stats.FirstOrDefault();
                 <tr>
 
-                    <td>
+                    <td scope="row">
                         @Html.ActionLink(endpoint.Url, "EndpointStats", new { id = endpoint.Id }, null)
                     </td>
                     @*<td>@endpoint.Tags</td>*@

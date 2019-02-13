@@ -67,11 +67,11 @@
 
             <thead>
                 <tr>
-                    <td>Healthy</td>
-                    <td>HttpStatus</td>
-                    <td>Timestamp</td>
-                    <td>Response Time</td>
-                    <td>Message</td>
+                    <th scope="col">Healthy</th>
+                    <th scope="col">HttpStatus</th>
+                    <th scope="col">Timestamp</th>
+                    <th scope="col">Response Time</th>
+                    <th scope="col">Message</th>
                 </tr>
             </thead>
 
@@ -95,7 +95,7 @@
                 }
 
                 <tr>
-                    <td>@stat.IsHealthy</td>
+                    <td scope="row">@stat.IsHealthy</td>
                     <td>@stat.Status</td>
                     <td>@stat.TimeStamp.ToLocalTime()</td>
                     <td>@stat.ResponseTime</td>
