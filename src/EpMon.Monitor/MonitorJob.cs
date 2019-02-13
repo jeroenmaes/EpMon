@@ -2,18 +2,17 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
-using System.Threading;
-using Common.Logging;
+
 using EpMon.Data;
 using EpMon.Data.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace EpMon.Monitor
 {
     class MonitorJob
     {
-        private static readonly ILog Logger = LogManager.GetLogger<MonitorJob>();
-        
+        private readonly ILogger<MonitorJob> _logger;
+
         private Endpoint Endpoint { get; }
         public MonitorJob(Endpoint endpoint)
         {
@@ -39,7 +38,7 @@ namespace EpMon.Monitor
             }
             catch (Exception e)
             {
-                Logger.Error($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e);
+                //_logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e);
 
                 throw;
             }
@@ -87,7 +86,7 @@ namespace EpMon.Monitor
                 Console.WriteLine($"{result.TimeStamp} :: Healthy : {Endpoint.Url} : {result.ResponseTime} ms");
                 Console.ResetColor();
 
-                Logger.Info($"{result.Status} : {Endpoint.Url} : {result.ResponseTime} ms");
+                //_logger.LogInformation($"{result.Status} : {Endpoint.Url} : {result.ResponseTime} ms");
             }
             else
             {
@@ -95,7 +94,7 @@ namespace EpMon.Monitor
                 Console.WriteLine($"{result.TimeStamp} :: NotHealthy : {Endpoint.Url}");
                 Console.ResetColor();
 
-                Logger.Error($"{result.TimeStamp} :: NotHealthy {Endpoint.Url} : {result.Message}");
+                //_logger.LogError($"{result.TimeStamp} :: NotHealthy {Endpoint.Url} : {result.Message}");
             }
         }
 
