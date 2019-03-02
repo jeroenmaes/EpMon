@@ -16,7 +16,7 @@ namespace EpMon.Monitor
 
             NonReentrantAsDefault();
 
-            Console.WriteLine($"Found '{endpoints.Count}' HTTP endpoints to monitor.");
+            //Console.WriteLine($"Found '{endpoints.Count}' HTTP endpoints to monitor.");
 
             foreach (var endpoint in endpoints/*.Where(x => x.IsActive)*/)
             {
@@ -34,7 +34,7 @@ namespace EpMon.Monitor
 
         public void MonitorJobs()
         {
-            Console.WriteLine("Active HTTP endpoint monitors: ");
+            //Console.WriteLine("Active HTTP endpoint monitors: ");
 
             foreach (var monitor in JobManager.AllSchedules.ToList())
             {

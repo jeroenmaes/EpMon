@@ -29,7 +29,7 @@ namespace EpMon.Data
 
             var configuration = builder.Build();
 
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("EpMonConnection");
         }
 
         public DbSet<Endpoint> Endpoints { get; set; }

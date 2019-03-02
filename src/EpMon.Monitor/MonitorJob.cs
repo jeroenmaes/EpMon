@@ -30,10 +30,10 @@ namespace EpMon.Monitor
                     ValidateCustom(endpointStat);
                 }
 
-                ConsoleLog(endpointStat);
+                //ConsoleLog(endpointStat);
 
                 var repo = new EpMonRepository();
-                repo.AddStat(endpointStat);
+                repo.AddEndpointStat(endpointStat);
 
             }
             catch (Exception e)
@@ -122,6 +122,14 @@ namespace EpMon.Monitor
 
                 if (info.Details.ContainsKey("content"))
                     result.Message = info.Details["content"];
+
+                if (info.Details.ContainsKey("contentType"))
+                {
+                    if (info.Details["contentType"].Contains("html"))
+                    {
+                        result.Message = string.Empty;
+                    }
+                }
             }
 
             return result;

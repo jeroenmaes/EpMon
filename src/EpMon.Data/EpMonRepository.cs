@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using EpMon.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace EpMon.Data
 {
@@ -13,9 +14,7 @@ namespace EpMon.Data
         {
             using (var db = new EpMonContext())
             {
-                var endpoint = db.Endpoints.Include("Stats").FirstOrDefault(q => q.Id == endpointId);
-
-                return endpoint;
+                return db.Endpoints.FirstOrDefault(q => q.Id == endpointId);
             }
         }
 
@@ -27,7 +26,6 @@ namespace EpMon.Data
 
                 foreach (var endpoint in endpoints)
                 {
-                    
                     endpoint.Stats = new List<EndpointStat>();
                     var stat = GetLastStat(endpoint.Id);
                     endpoint.Stats.Add(stat);
@@ -37,13 +35,13 @@ namespace EpMon.Data
             }
         }
 
-        public void AddStat(EndpointStat stat)
+        public void AddEndpointStat(EndpointStat stat)
         {
             using (var db = new EpMonContext())
             {
-                var endpoint = db.Endpoints.Include("Stats").FirstOrDefault(q => q.Id == stat.EndpointId);
+                var result = db.EndpointStats.Add(new EndpointStat
+                { EndpointId  = stat.EndpointId, IsHealthy = stat.IsHealthy, Message =  stat.Message, ResponseTime = stat.ResponseTime, TimeStamp = stat.TimeStamp, Status = stat.Status});
 
-                endpoint?.Stats.Add(stat);
                 db.SaveChanges();
             }
         }
@@ -59,13 +57,14 @@ namespace EpMon.Data
             }
         }
 
-        public IEnumerable<EndpointStat> GetStats(int endpointId)
+        public IEnumerable<EndpointStat> GetStats(int endpointId, int pageNumber, int pageSize)
         {
             using (var db = new EpMonContext())
             {
-                var endpoint = db.Endpoints.Include("Stats").FirstOrDefault(q => q.Id == endpointId);
-
-                return endpoint?.Stats.OrderByDescending(x => x.TimeStamp);                
+                return db.EndpointStats.Where(q => q.EndpointId == endpointId)
+                                        .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-24))
+                                        .OrderByDescending(x => x.TimeStamp)
+                                        .ToPagedList(pageNumber, pageSize);
             }
         }
         
@@ -73,7 +72,8 @@ namespace EpMon.Data
         {
             using (var db = new EpMonContext())
             {
-                var stat = db.EndpointStats.Include("Endpoint").Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).FirstOrDefault();
+                var stat = db.EndpointStats.Where(q => q.Endpoint.Id == endpointId)
+                                            .OrderByDescending(x => x.TimeStamp).FirstOrDefault();
 
                 return stat;
             }

@@ -34,7 +34,7 @@ namespace EpMon.Web.Core.Controllers
 
             var unHealthy = endpoints.Count(x => x.Stats.FirstOrDefault().IsHealthy == false) > 0;
 
-            //Response.AddHeader("Refresh", TimeSpan.FromMinutes(2).TotalSeconds.ToString());
+            Response.Headers.Add("Refresh", TimeSpan.FromMinutes(2).TotalSeconds.ToString());
 
             return View(new EndpointsOverview { EndpointsByTag = endpointsByTag, UnHealthyEndpoints = unHealthy });
         }
@@ -48,8 +48,8 @@ namespace EpMon.Web.Core.Controllers
             var pageNumber = page ?? 1;
             var pageSize = 15;
 
-            var stats = _repo.GetStats(id.Value).Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-24)).OrderByDescending(x => x.TimeStamp).ToPagedList(pageNumber, pageSize);
-            var endpoint = _repo.GetEndpoint(stats[0].EndpointId);
+            var stats = _repo.GetStats(id.Value, pageNumber, pageSize);
+            var endpoint = _repo.GetEndpoint(id.Value);
             var lastStat = stats.FirstOrDefault();
 
             var responseTimes = new List<long[]>();

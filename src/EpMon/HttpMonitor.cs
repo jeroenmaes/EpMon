@@ -71,7 +71,8 @@ namespace EpMon
             return new Dictionary<string, string>
             {
                 {"code", response.StatusCode.ToString()},
-                {"content", content}
+                {"content", content},
+                {"contentType", response.ContentType}
             };
         }
     }
