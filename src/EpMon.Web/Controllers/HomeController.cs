@@ -34,7 +34,7 @@ namespace EpMon.Web.Core.Controllers
 
             var unHealthy = endpoints.Count(x => x.Stats.FirstOrDefault().IsHealthy == false) > 0;
 
-            Response.Headers.Add("Refresh", TimeSpan.FromMinutes(2).TotalSeconds.ToString());
+            Response.Headers.Add("Refresh", TimeSpan.FromMinutes(1).TotalSeconds.ToString());
 
             return View(new EndpointsOverview { EndpointsByTag = endpointsByTag, UnHealthyEndpoints = unHealthy });
         }

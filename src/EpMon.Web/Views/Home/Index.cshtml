@@ -10,11 +10,11 @@
         @{
             if (@Model.UnHealthyEndpoints)
             {
-                <div class="panel panel-warning">
+                <div class="alert alert-warning" role="alert">
                     <div class="panel-heading">
                         <h5 class="panel-title">
                             Not all endpoints are healthy
-                            <small class="pull-right">Refreshes every 2 minutes</small>
+                            <small class="float-right">Refreshes every minute</small>
                         </h5>
                     </div>                
                 </div>
@@ -41,7 +41,8 @@
                 @foreach (var endpoint in tag.Value)
                 {
                     var lastStat = endpoint.Stats.FirstOrDefault();
-                <tr>
+                
+                    <tr>
 
                     <td scope="row">
                         @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
@@ -53,14 +54,14 @@
                     {
                         if (!lastStat.IsHealthy)
                         {
-                            <td class="danger">
-                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">NOK</span>
+                            <td class="table-danger">
+                                NOK
                            </td>
                         }
                         else
                         {
-                            <td class="success">
-                                <span class="glyphicon glyphicon-ok-circle" aria-hidden="true">OK</span>
+                            <td class="table-success">
+                                OK
                             </td>
                         }
                     }
