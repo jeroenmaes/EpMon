@@ -48,7 +48,9 @@ namespace EpMon.Web.Core.Controllers
             var pageNumber = page ?? 1;
             var pageSize = 15;
 
-            var stats = _repo.GetStats(id.Value, pageNumber, pageSize);
+            var stats = _repo.GetStats(id.Value);
+            var pagedStats = _repo.GetStats(id.Value, pageNumber, pageSize);
+
             var endpoint = _repo.GetEndpoint(id.Value);
             var lastStat = stats.FirstOrDefault();
 
@@ -77,7 +79,7 @@ namespace EpMon.Web.Core.Controllers
 
             return View(new EndpointDetails
             {
-                Stats = stats,
+                Stats = pagedStats,
                 Endpoint = endpoint,
                 ResponseTimeData = responseTimeData,
                 UptimeData = uptimeData,

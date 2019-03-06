@@ -5,11 +5,11 @@
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 @using X.PagedList;
+@using X.PagedList.Mvc.Common
 @using X.PagedList.Mvc.Core
 
 @model EpMon.Web.Models.EndpointDetails
 
-<link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
 <div class="row">
     <div class="col-md-12">
         <h2>Statistics</h2>
@@ -103,8 +103,12 @@
                 </tr>
             }
         </table>
-
-        @Html.PagedListPager((IPagedList)Model.Stats, page => Url.Action("EndpointStats", new { page }))
+        
+        @Html.PagedListPager((IPagedList)Model.Stats, page => Url.Action("EndpointStats", new { page = page }), 
+            new PagedListRenderOptions {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" }
+            })
     </div>
 
 </div>

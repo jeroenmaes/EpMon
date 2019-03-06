@@ -57,6 +57,17 @@ namespace EpMon.Data
             }
         }
 
+        public IEnumerable<EndpointStat> GetStats(int endpointId)
+        {
+            using (var db = new EpMonContext())
+            {
+                return db.EndpointStats.Where(q => q.EndpointId == endpointId)
+                    .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-24))
+                    .OrderByDescending(x => x.TimeStamp).ToList();
+
+            }
+        }
+
         public IEnumerable<EndpointStat> GetStats(int endpointId, int pageNumber, int pageSize)
         {
             using (var db = new EpMonContext())
@@ -103,7 +114,9 @@ namespace EpMon.Data
                         CheckInterval = 5,
                         CheckType = CheckType.AvailabilityCheck,
                         Tags = "Personal",
-                        Url = @"http:\\blog.jeroenmaes.eu"
+                        Url = @"http:\\blog.jeroenmaes.eu",
+                        Name = @"blog.jeroenmaes.eu",
+                        IsActive = true
                     });
                 }
                 context.SaveChanges();

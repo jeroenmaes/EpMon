@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h2 class="mb-5">Endpoints <small class="text-muted" style="">@Model.EndpointsByTag.Sum(x => x.Value.Count) monitored (@DateTime.Now)</small></h2>
+        <h2 class="mb-2">Endpoints <small class="text-muted" style="">@Model.EndpointsByTag.Sum(x => x.Value.Count) monitored (@DateTime.Now)</small></h2>
         @{
             if (@Model.UnHealthyEndpoints)
             {
@@ -29,7 +29,7 @@
 
                 <thead>
                 <tr>
-                    <th scope="col">Url</th>
+                    <th scope="col">Name</th>
                     @*<td>Tag</td>*@
                     <th scope="col">Type</th>
                     <th scope="col">Interval</th>
@@ -44,7 +44,7 @@
                 <tr>
 
                     <td scope="row">
-                        @Html.ActionLink(endpoint.Url, "EndpointStats", new { id = endpoint.Id }, null)
+                        @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
                     </td>
                     @*<td>@endpoint.Tags</td>*@
                     <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
