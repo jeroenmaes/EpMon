@@ -106,6 +106,9 @@ namespace EpMon.Data
         {
             using (var context = new EpMonContext())
             {
+                //Only Seed when database is empty
+                if (context.Endpoints.Any()) return;
+
                 var testEndpoint = context.Endpoints.FirstOrDefault(b => b.Url == @"http:\\blog.jeroenmaes.eu");
                 if (testEndpoint == null)
                 {
@@ -119,6 +122,7 @@ namespace EpMon.Data
                         IsActive = true
                     });
                 }
+
                 context.SaveChanges();
             }
         }
