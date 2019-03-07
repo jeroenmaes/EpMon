@@ -10,14 +10,6 @@ namespace EpMon.Data
 {
     public class EpMonRepository
     {
-        public Endpoint GetEndpoint(int endpointId)
-        {
-            using (var db = new EpMonContext())
-            {
-                return db.Endpoints.FirstOrDefault(q => q.Id == endpointId);
-            }
-        }
-
         public IEnumerable<Endpoint> GetEndpoints()
         {
             using (var db = new EpMonContext())
@@ -39,8 +31,7 @@ namespace EpMon.Data
         {
             using (var db = new EpMonContext())
             {
-                var result = db.EndpointStats.Add(new EndpointStat
-                { EndpointId  = stat.EndpointId, IsHealthy = stat.IsHealthy, Message =  stat.Message, ResponseTime = stat.ResponseTime, TimeStamp = stat.TimeStamp, Status = stat.Status});
+                db.EndpointStats.Add(new EndpointStat { EndpointId  = stat.EndpointId, IsHealthy = stat.IsHealthy, Message =  stat.Message, ResponseTime = stat.ResponseTime, TimeStamp = stat.TimeStamp, Status = stat.Status});
 
                 db.SaveChanges();
             }
@@ -54,28 +45,6 @@ namespace EpMon.Data
                 var statsToRemove = db.EndpointStats.Where(x => (x.TimeStamp <= compareWith));
                 db.EndpointStats.RemoveRange(statsToRemove);
                 db.SaveChanges();
-            }
-        }
-
-        public IEnumerable<EndpointStat> GetStats(int endpointId)
-        {
-            using (var db = new EpMonContext())
-            {
-                return db.EndpointStats.Where(q => q.EndpointId == endpointId)
-                    .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-24))
-                    .OrderByDescending(x => x.TimeStamp).ToList();
-
-            }
-        }
-
-        public IEnumerable<EndpointStat> GetStats(int endpointId, int pageNumber, int pageSize)
-        {
-            using (var db = new EpMonContext())
-            {
-                return db.EndpointStats.Where(q => q.EndpointId == endpointId)
-                                        .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-24))
-                                        .OrderByDescending(x => x.TimeStamp)
-                                        .ToPagedList(pageNumber, pageSize);
             }
         }
         

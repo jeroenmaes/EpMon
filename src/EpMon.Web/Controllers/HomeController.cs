@@ -15,43 +15,35 @@ namespace EpMon.Web.Core.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly EpMonRepository _repo;
+        private readonly EpMonAsyncRepository _repo;
 
         public HomeController()
         {
-            _repo = new EpMonRepository();
+            _repo = new EpMonAsyncRepository();
         }
         
-        public ActionResult Index(string filter = "")
+        public async Task<ActionResult> Index(string filter = "")
         {
-            Dictionary<string, List<Endpoint>> endpointsByTag;
-            IEnumerable<Endpoint> endpoints;
-            filter = filter.ToLower();
-
-            endpoints = filter != "" ? _repo.GetEndpoints().Where(y => y.Tags.ToLower().Contains(filter)).ToList() : _repo.GetEndpoints().ToList();
-
-            endpointsByTag = endpoints.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
-
-            var unHealthy = endpoints.Count(x => x.Stats.FirstOrDefault().IsHealthy == false) > 0;
+            var endpoints = await _repo.GetEndpointsAsync(filter);
+            var endpointsByTag = endpoints.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
+            var unHealthyEndpoints = endpoints.Count(x => x.Stats.FirstOrDefault().IsHealthy == false) > 0;
 
             Response.Headers.Add("Refresh", TimeSpan.FromMinutes(1).TotalSeconds.ToString());
 
-            return View(new EndpointsOverview { EndpointsByTag = endpointsByTag, UnHealthyEndpoints = unHealthy });
+            return View(new EndpointsOverview { EndpointsByTag = endpointsByTag, UnHealthyEndpoints = unHealthyEndpoints });
         }
 
-        public ActionResult EndpointStats(int? id, int? page, string start = "", string end = "")
+        public async Task<ActionResult> EndpointStats(int? id, int? page, string start = "", string end = "")
         {
-            // if start and end are empty, show last 24 hours
-            // else filter...
-
             id = id ?? 1;
             var pageNumber = page ?? 1;
             var pageSize = 15;
+            var maxHours = 24;
 
-            var stats = _repo.GetStats(id.Value);
-            var pagedStats = _repo.GetStats(id.Value, pageNumber, pageSize);
+            var stats = await _repo.GetStatsAsync(id.Value, maxHours);
+            var pagedStats = await _repo.GetStatsAsync(id.Value, maxHours, pageNumber, pageSize);
 
-            var endpoint = _repo.GetEndpoint(id.Value);
+            var endpoint = await _repo.GetEndpointAsync(id.Value);
             var lastStat = stats.FirstOrDefault();
 
             var responseTimes = new List<long[]>();

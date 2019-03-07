@@ -85,9 +85,6 @@
                 }
                 catch (Exception /*e*/)
                 {
-                    //non json data
-                    //jsonString = @stat.Message;
-
                     if (!string.IsNullOrWhiteSpace(@stat.Message) && @stat.Message.Length >= 100)
                     {
                         jsonString = @stat.Message.Substring(0, 100);

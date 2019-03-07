@@ -30,7 +30,6 @@
                 <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    @*<td>Tag</td>*@
                     <th scope="col">Type</th>
                     <th scope="col">Interval</th>
                     <th scope="col">Healthy</th>
@@ -47,7 +46,6 @@
                     <td scope="row">
                         @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
                     </td>
-                    @*<td>@endpoint.Tags</td>*@
                     <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
                     <td>@endpoint.CheckInterval min</td>
                     @if (lastStat != null)
