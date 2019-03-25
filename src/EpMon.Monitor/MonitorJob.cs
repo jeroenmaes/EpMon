@@ -1,11 +1,10 @@
-﻿using System;
+﻿using EpMon.Data;
+using EpMon.Data.Entities;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-
-using EpMon.Data;
-using EpMon.Data.Entities;
-using Microsoft.Extensions.Logging;
 
 namespace EpMon.Monitor
 {
@@ -14,10 +13,15 @@ namespace EpMon.Monitor
         private readonly ILogger<MonitorJob> _logger;
 
         private Endpoint Endpoint { get; }
-        public MonitorJob(Endpoint endpoint)
+
+        private static HttpClientFactory HttpClientFactory;
+
+        public MonitorJob(Endpoint endpoint, HttpClientFactory httpClientFactory)
         {
             try
             {
+                HttpClientFactory = httpClientFactory;
+
                 Endpoint = endpoint;
                 var endpointStat = CheckHealth();
                 
@@ -107,7 +111,7 @@ namespace EpMon.Monitor
         {
             var result = new EndpointStat {EndpointId = Endpoint.Id};
 
-            var monitor = new HttpMonitor();
+            var monitor = new HttpMonitor(Endpoint.Id.ToString(), HttpClientFactory);
             var sw = Stopwatch.StartNew();
             var info = monitor.CheckHealth(Endpoint.Url);
             result.TimeStamp = DateTime.UtcNow;

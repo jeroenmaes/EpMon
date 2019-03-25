@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EpMon
 {
     public class HttpMonitor : IHealthMonitor
     {
+        public static HttpClientFactory HttpClientFactory;
         public HttpMonitor() : this("http") { }
 
-        protected HttpMonitor(string name)
+        public HttpMonitor(string name)
         {
             Name = name;
+            HttpClientFactory = new HttpClientFactory();
+
+            ServicePointManager.DefaultConnectionLimit = 100;
+        }
+        public HttpMonitor(string name, HttpClientFactory httpClientFactory)
+        {
+            Name = name;
+            HttpClientFactory = httpClientFactory;
 
             ServicePointManager.DefaultConnectionLimit = 100;
         }
@@ -26,53 +29,35 @@ namespace EpMon
         
         public HealthInfo CheckHealth(string address)
         {
-            try
+            var baseUri = GetBaseUri(address);
+            var httpClient = HttpClientFactory.Create(new Uri(baseUri));
+
+            using (var response = httpClient.GetAsync(address).Result)
             {
-                var request = WebRequest.Create(new Uri(address)) as HttpWebRequest;
-                if (request != null)
-                {
-                    request.Proxy = null;
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                    return new HealthInfo(HealthStatus.NotExists);
+                if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    return new HealthInfo(HealthStatus.Offline);
+                if (response.IsSuccessStatusCode)
+                    return new HealthInfo(HealthStatus.Healthy, ReadContent(response));
 
-                    using (var response = request.GetResponse() as HttpWebResponse)
-                    {
-                        return new HealthInfo(HealthStatus.Healthy, ReadContent(response));
-                    }
-                }
+                return new HealthInfo(HealthStatus.Faulty, ReadContent(response));
             }
-            catch (WebException ex)
-            {
-                using (var errorResponse = (HttpWebResponse)ex.Response)
-                {
-                    if (errorResponse != null)
-                    {
-                        if (errorResponse.StatusCode == HttpStatusCode.NotFound)
-                            return new HealthInfo(HealthStatus.NotExists);
-
-                        if (errorResponse.StatusCode == HttpStatusCode.ServiceUnavailable)
-                            return new HealthInfo(HealthStatus.Offline);
-
-                        return new HealthInfo(HealthStatus.Faulty, ReadContent(errorResponse));
-                    }
-                }
-            }
-
-            return new HealthInfo(HealthStatus.Faulty);
         }
 
-        private IReadOnlyDictionary<string, string> ReadContent(HttpWebResponse response)
+        private static string GetBaseUri(string address)
         {
-            string content;
-            using (var stream = response.GetResponseStream())
-            {
-                var reader = new StreamReader(stream);
-                content = reader.ReadToEnd();
-            }
-            
+            var uri = new Uri(address);
+            var baseUri = uri.GetLeftPart(UriPartial.Authority);
+            return baseUri;
+        }
+
+        private IReadOnlyDictionary<string, string> ReadContent(HttpResponseMessage response)
+        {
             return new Dictionary<string, string>
             {
                 {"code", response.StatusCode.ToString()},
-                {"content", content},
-                {"contentType", response.ContentType}
+                {"content", response.Content.ReadAsStringAsync().Result},
             };
         }
     }

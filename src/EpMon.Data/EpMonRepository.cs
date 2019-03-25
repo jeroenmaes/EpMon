@@ -1,10 +1,7 @@
-﻿using System;
+﻿using EpMon.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using EpMon.Data.Entities;
-using Microsoft.EntityFrameworkCore;
-using X.PagedList;
 
 namespace EpMon.Data
 {

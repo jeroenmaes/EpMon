@@ -1,5 +1,3 @@
-using System;
-
 namespace EpMon.Web.Core.Models
 {
     public class ErrorViewModel

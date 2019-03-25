@@ -1,15 +1,13 @@
-﻿using System;
+﻿using EpMon.Data;
+using EpMon.Web.Core.Models;
+using EpMon.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using EpMon.Data;
-using EpMon.Data.Entities;
-using Microsoft.AspNetCore.Mvc;
-using EpMon.Web.Core.Models;
-using EpMon.Web.Models;
-using Newtonsoft.Json;
-using X.PagedList;
 
 namespace EpMon.Web.Core.Controllers
 {

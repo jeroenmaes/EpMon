@@ -1,16 +1,18 @@
-﻿using System;
-using System.Linq;
-using EpMon.Data;
+﻿using EpMon.Data;
 using FluentScheduler;
+using System.Linq;
 
 namespace EpMon.Monitor
 {
     public class MonitorRegistry : Registry
     {
+        private static HttpClientFactory _HttpClientFactory;
         public MonitorRegistry()
         {
             var repo = new EpMonRepository();
             repo.CustomSeed();
+
+            _HttpClientFactory = new HttpClientFactory();
 
             var endpoints = repo.GetEndpoints().ToList();
 
@@ -20,7 +22,7 @@ namespace EpMon.Monitor
 
             foreach (var endpoint in endpoints/*.Where(x => x.IsActive)*/)
             {
-                Schedule(() => new MonitorJob(endpoint)).WithName($"EndpointId={endpoint.Id}")
+                Schedule(() => new MonitorJob(endpoint, _HttpClientFactory)).WithName($"EndpointId={endpoint.Id}")
                     .ToRunNow()
                     .AndEvery(endpoint.CheckInterval).Minutes();
             }

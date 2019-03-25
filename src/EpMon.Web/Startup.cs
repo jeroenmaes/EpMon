@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EpMon.Monitor;
+﻿using EpMon.Monitor;
 using FluentScheduler;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace EpMon.Web.Core
 {
@@ -41,15 +34,7 @@ namespace EpMon.Web.Core
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime/*, ILoggerFactory loggerFactory*/)
         {
-            //if (env.IsDevelopment())
-            //{
-                app.UseDeveloperExceptionPage();
-            //}
-            //else
-            //{
-            //    app.UseExceptionHandler("/Home/Error");
-            //}
-            
+            app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
            
             //loggerFactory.AddLog4Net();
@@ -60,8 +45,6 @@ namespace EpMon.Web.Core
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            
 
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
         }
