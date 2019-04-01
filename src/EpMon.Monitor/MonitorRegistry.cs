@@ -10,7 +10,7 @@ namespace EpMon.Monitor
         public MonitorRegistry()
         {
             var repo = new EpMonRepository();
-            repo.CustomSeed();
+            //repo.CustomSeed();
 
             _HttpClientFactory = new HttpClientFactory();
 
@@ -20,7 +20,7 @@ namespace EpMon.Monitor
 
             //Console.WriteLine($"Found '{endpoints.Count}' HTTP endpoints to monitor.");
 
-            foreach (var endpoint in endpoints/*.Where(x => x.IsActive)*/)
+            foreach (var endpoint in endpoints.Where(x => x.IsActive))
             {
                 Schedule(() => new MonitorJob(endpoint, _HttpClientFactory)).WithName($"EndpointId={endpoint.Id}")
                     .ToRunNow()

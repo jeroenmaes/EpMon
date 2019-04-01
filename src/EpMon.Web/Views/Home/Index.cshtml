@@ -28,19 +28,19 @@
             <table class="table">
 
                 <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Interval</th>
-                    <th scope="col">Healthy</th>
-                    <th scope="col">Last Checked</th>
-                </tr>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Interval</th>
+                        <th scope="col">Healthy</th>
+                        <th scope="col">Last Checked</th>
+                    </tr>
                 </thead>
 
                 @foreach (var endpoint in tag.Value)
                 {
-                    var lastStat = endpoint.Stats.FirstOrDefault();
-                
+                    var lastStat = endpoint.Stats?.FirstOrDefault();
+                    
                     <tr>
 
                     <td scope="row">
@@ -63,12 +63,12 @@
                             </td>
                         }
                     }
-                    <td>
-                        @if (lastStat != null)
-                        {
-                            @lastStat.TimeStamp.ToLocalTime()
-                        }
-                    </td>
+                        <td>
+                            @if (lastStat != null)
+                            {
+                                @lastStat.TimeStamp.ToLocalTime()
+                            }
+                        </td>
                 </tr>
                 }
             </table>

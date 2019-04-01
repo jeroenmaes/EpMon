@@ -24,7 +24,7 @@ namespace EpMon.Web.Core.Controllers
         {
             var endpoints = await _repo.GetEndpointsAsync(filter);
             var endpointsByTag = endpoints.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
-            var unHealthyEndpoints = endpoints.Count(x => x.Stats.FirstOrDefault().IsHealthy == false) > 0;
+            var unHealthyEndpoints = endpoints.Count(x => x.Stats?.FirstOrDefault().IsHealthy == false) > 0;
 
             Response.Headers.Add("Refresh", TimeSpan.FromMinutes(1).TotalSeconds.ToString());
 
@@ -61,7 +61,7 @@ namespace EpMon.Web.Core.Controllers
             var responseTimeData = JsonConvert.SerializeObject(responseTimes);
             var uptimeData = JsonConvert.SerializeObject(uptimes);
 
-            var uptime = 100;
+            var uptime = Math.Round(((double)stats.Count(x => x.IsHealthy == true) / (double) stats.Count()) * 100.00, 2);
             var responseTime = 0.0;
 
             if (stats.Any())

@@ -23,6 +23,8 @@ namespace EpMon.Data
             using (var db = new EpMonContext())
             {
                 IEnumerable<Endpoint> endpoints;
+                List<Endpoint> returnValues = new List<Endpoint>();
+
                 if (tagFilter != "")
                 {
                     endpoints = await db.Endpoints.Where(y => y.Tags.ToLower().Contains(tagFilter.ToLower())).ToListAsync();
@@ -32,14 +34,16 @@ namespace EpMon.Data
                     endpoints = await db.Endpoints.ToListAsync();
                 }
 
-                foreach (var endpoint in endpoints)
+                foreach (var endpoint in endpoints.Where(x => x.IsActive))
                 {
                     endpoint.Stats = new List<EndpointStat>();
                     var stat = await GetLastStatAsync(endpoint.Id);
                     endpoint.Stats.Add(stat);
+
+                    returnValues.Add(endpoint);
                 }
 
-                return endpoints;
+                return returnValues;
             }
         }
         

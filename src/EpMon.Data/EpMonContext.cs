@@ -4,20 +4,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace EpMon.Data
 {
-    public class EpMonContext : DbContext
+    public partial class EpMonContext : DbContext
     {
         private static string _connectionString;
 
         public EpMonContext() : base()
         {
             LoadConnectionString();
-            Database.Migrate();
+            
+            //Database.Migrate();
         }
-        
+
+        public EpMonContext(DbContextOptions<EpMonContext> options) : base(options)
+        {
+            
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(_connectionString);
         }
+
 
         private static void LoadConnectionString()
         {
