@@ -11,11 +11,10 @@ namespace EpMon.Web.Core.Controllers
     public class ConfigurationController : ControllerBase
     {
         private readonly EpMonAsyncRepository _asyncRepo;
-        private readonly EpMonRepository _repo;
-        public ConfigurationController()
+        
+        public ConfigurationController(EpMonAsyncRepository asyncRepo)
         {
-            _asyncRepo = new EpMonAsyncRepository();
-            _repo = new EpMonRepository();
+            _asyncRepo = asyncRepo;
         }
 
         [HttpGet]
@@ -23,11 +22,5 @@ namespace EpMon.Web.Core.Controllers
         {
             return (await _asyncRepo.GetEndpointsAsync("")).Select(x => x.Url);
         }
-
-        //[HttpPost]
-        //public int Post(string url, int checkInterval, string tags)
-        //{
-        //    return _repo.AddEndpoint(url, checkInterval, tags);
-        //}
     }
 }

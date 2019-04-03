@@ -11,16 +11,7 @@ namespace EpMon.Data
         {
             using (var db = new EpMonContext())
             {
-                var endpoints = db.Endpoints.ToList();
-
-                foreach (var endpoint in endpoints)
-                {
-                    endpoint.Stats = new List<EndpointStat>();
-                    var stat = GetLastStat(endpoint.Id);
-                    endpoint.Stats.Add(stat);
-                }
-
-                return endpoints;
+                return db.Endpoints.ToList();
             }
         }
 
@@ -45,29 +36,6 @@ namespace EpMon.Data
             }
         }
         
-        public EndpointStat GetLastStat(int endpointId)
-        {
-            using (var db = new EpMonContext())
-            {
-                var stat = db.EndpointStats.Where(q => q.Endpoint.Id == endpointId)
-                                            .OrderByDescending(x => x.TimeStamp).FirstOrDefault();
-
-                return stat;
-            }
-        }
-
-        public int AddEndpoint(string url, int checkInterval, string tags)
-        {
-            using (var db = new EpMonContext())
-            {
-                var result = db.Endpoints.Add(new Endpoint
-                    {Url = url, CheckInterval = checkInterval, Tags = tags, CheckType = CheckType.AvailabilityCheck});
-                db.SaveChanges();
-
-                return result.Entity.Id;
-            }
-        }
-
         public void CustomSeed()
         {
             using (var context = new EpMonContext())

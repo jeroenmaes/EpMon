@@ -21,14 +21,10 @@ namespace EpMon.Web.Core
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-        }
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
 
             JobManager.Initialize(new MonitorRegistry());
         }
+
         private void OnShutdown()
         {
             JobManager.StopAndBlock();
@@ -42,6 +38,8 @@ namespace EpMon.Web.Core
             services.AddDbContext<EpMonContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"));
             });
+
+            services.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -58,9 +56,7 @@ namespace EpMon.Web.Core
             app.UseStaticFiles();
            
             //loggerFactory.AddLog4Net();
-
-
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

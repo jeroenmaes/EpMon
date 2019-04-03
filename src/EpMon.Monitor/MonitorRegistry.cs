@@ -7,14 +7,15 @@ namespace EpMon.Monitor
     public class MonitorRegistry : Registry
     {
         private static HttpClientFactory _HttpClientFactory;
+        //private EpMonRepository _repo;
         public MonitorRegistry()
         {
-            var repo = new EpMonRepository();
+            var _repo = new EpMonRepository();
             //repo.CustomSeed();
 
             _HttpClientFactory = new HttpClientFactory();
 
-            var endpoints = repo.GetEndpoints().ToList();
+            var endpoints = _repo.GetEndpoints();
 
             NonReentrantAsDefault();
 
@@ -27,8 +28,8 @@ namespace EpMon.Monitor
                     .AndEvery(endpoint.CheckInterval).Minutes();
             }
 
-            Schedule(() => MonitorJobs()).WithName("MonitorJobs").ToRunNow().AndEvery(1).Minutes();
-            Schedule(() => MonitorAlerts()).WithName("MonitorAlerts").ToRunNow().AndEvery(1).Minutes();
+            //Schedule(() => MonitorJobs()).WithName("MonitorJobs").ToRunNow().AndEvery(1).Minutes();
+            //Schedule(() => MonitorAlerts()).WithName("MonitorAlerts").ToRunNow().AndEvery(1).Minutes();
 
             //hourly cleanup task to remove old data
             Schedule(() => CleanData()).WithName("CleanData").ToRunNow().AndEvery(1).Hours();
@@ -65,8 +66,8 @@ namespace EpMon.Monitor
 
         public void CleanData()
         {
-            var rep = new EpMonRepository();
-            rep.CleanStats(30);
+            var _repo = new EpMonRepository();
+            _repo.CleanStats(30);
         }
     }
 }

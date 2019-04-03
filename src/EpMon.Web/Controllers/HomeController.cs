@@ -13,16 +13,16 @@ namespace EpMon.Web.Core.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly EpMonAsyncRepository _repo;
+        private readonly EpMonAsyncRepository _asyncRepo;
 
-        public HomeController()
+        public HomeController(EpMonAsyncRepository asyncRepo)
         {
-            _repo = new EpMonAsyncRepository();
+            _asyncRepo = asyncRepo;
         }
         
         public async Task<ActionResult> Index(string filter = "")
         {
-            var endpoints = await _repo.GetEndpointsAsync(filter);
+            var endpoints = await _asyncRepo.GetEndpointsAsync(filter);
             var endpointsByTag = endpoints.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
             var unHealthyEndpoints = endpoints.Count(x => x.Stats?.FirstOrDefault().IsHealthy == false) > 0;
 
@@ -38,10 +38,10 @@ namespace EpMon.Web.Core.Controllers
             var pageSize = 15;
             var maxHours = 24;
 
-            var stats = await _repo.GetStatsAsync(id.Value, maxHours);
-            var pagedStats = await _repo.GetStatsAsync(id.Value, maxHours, pageNumber, pageSize);
+            var stats = await _asyncRepo.GetStatsAsync(id.Value, maxHours);
+            var pagedStats = await _asyncRepo.GetStatsAsync(id.Value, maxHours, pageNumber, pageSize);
 
-            var endpoint = await _repo.GetEndpointAsync(id.Value);
+            var endpoint = await _asyncRepo.GetEndpointAsync(id.Value);
             var lastStat = stats.FirstOrDefault();
 
             var responseTimes = new List<long[]>();
