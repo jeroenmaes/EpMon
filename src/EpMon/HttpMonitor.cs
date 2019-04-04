@@ -7,7 +7,7 @@ namespace EpMon
 {
     public class HttpMonitor : IHealthMonitor
     {
-        public static HttpClientFactory HttpClientFactory;
+        public HttpClientFactory HttpClientFactory;
         public HttpMonitor() : this("http") { }
 
         public HttpMonitor(string name)
@@ -29,7 +29,7 @@ namespace EpMon
         
         public HealthInfo CheckHealth(string address)
         {
-            var baseUri = GetBaseUri(address);
+            var baseUri = UriHelper.GetBaseUri(address);
             var httpClient = HttpClientFactory.Create(new Uri(baseUri));
 
             using (var response = httpClient.GetAsync(address).Result)
@@ -43,13 +43,6 @@ namespace EpMon
 
                 return new HealthInfo(HealthStatus.Faulty, ReadContent(response));
             }
-        }
-
-        private static string GetBaseUri(string address)
-        {
-            var uri = new Uri(address);
-            var baseUri = uri.GetLeftPart(UriPartial.Authority);
-            return baseUri;
         }
 
         private IReadOnlyDictionary<string, string> ReadContent(HttpResponseMessage response)

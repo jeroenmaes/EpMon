@@ -12,17 +12,20 @@ namespace EpMon.Monitor
     {
         private readonly ILogger<MonitorJob> _logger;
 
-        private Endpoint Endpoint { get; }
+        private readonly Endpoint _endpoint;
 
-        private static HttpClientFactory HttpClientFactory;
+        private readonly HttpClientFactory _httpClientFactory;
 
-        public MonitorJob(Endpoint endpoint, HttpClientFactory httpClientFactory)
+        private readonly EpMonRepository _repo;
+
+        public MonitorJob(Endpoint endpoint, HttpClientFactory httpClientFactory, EpMonRepository repo)
         {
             try
             {
-                HttpClientFactory = httpClientFactory;
+                _httpClientFactory = httpClientFactory;
+                _repo = repo;
+                _endpoint = endpoint;
 
-                Endpoint = endpoint;
                 var endpointStat = CheckHealth();
                 
                 if (endpoint.CheckType == CheckType.AvailabilityCheck)
@@ -36,11 +39,10 @@ namespace EpMon.Monitor
 
                 //ConsoleLog(endpointStat);
 
-                var repo = new EpMonRepository();
-                repo.AddEndpointStat(endpointStat);
+                _repo.AddEndpointStat(endpointStat);
 
             }
-            catch (Exception e)
+            catch (Exception /*e*/)
             {
                 //_logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e);
 
@@ -87,7 +89,7 @@ namespace EpMon.Monitor
             if (result.IsHealthy)
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine($"{result.TimeStamp} :: Healthy : {Endpoint.Url} : {result.ResponseTime} ms");
+                Console.WriteLine($"{result.TimeStamp} :: Healthy : {_endpoint.Url} : {result.ResponseTime} ms");
                 Console.ResetColor();
 
                 //_logger.LogInformation($"{result.Status} : {Endpoint.Url} : {result.ResponseTime} ms");
@@ -95,7 +97,7 @@ namespace EpMon.Monitor
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{result.TimeStamp} :: NotHealthy : {Endpoint.Url}");
+                Console.WriteLine($"{result.TimeStamp} :: NotHealthy : {_endpoint.Url}");
                 Console.ResetColor();
 
                 //_logger.LogError($"{result.TimeStamp} :: NotHealthy {Endpoint.Url} : {result.Message}");
@@ -109,11 +111,11 @@ namespace EpMon.Monitor
 
         private EndpointStat CheckHealth()
         {
-            var result = new EndpointStat {EndpointId = Endpoint.Id};
+            var result = new EndpointStat {EndpointId = _endpoint.Id};
 
-            var monitor = new HttpMonitor(Endpoint.Id.ToString(), HttpClientFactory);
+            var monitor = new HttpMonitor(_endpoint.Id.ToString(), _httpClientFactory);
             var sw = Stopwatch.StartNew();
-            var info = monitor.CheckHealth(Endpoint.Url);
+            var info = monitor.CheckHealth(_endpoint.Url);
             result.TimeStamp = DateTime.UtcNow;
             sw.Stop();
 

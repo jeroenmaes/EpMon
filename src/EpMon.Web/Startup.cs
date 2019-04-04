@@ -21,8 +21,6 @@ namespace EpMon.Web.Core
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-
-            JobManager.Initialize(new MonitorRegistry());
         }
 
         private void OnShutdown()
@@ -39,6 +37,9 @@ namespace EpMon.Web.Core
                 options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"));
             });
 
+            services.AddSingleton<HttpClientFactory, HttpClientFactory>();
+
+            services.AddTransient<EpMonRepository, EpMonRepository>();
             services.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -63,6 +64,12 @@ namespace EpMon.Web.Core
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+
+            var httpClientFactory = app.ApplicationServices.GetRequiredService<HttpClientFactory>();
+            var repo = app.ApplicationServices.GetRequiredService<EpMonRepository>();
+
+            JobManager.Initialize(new MonitorRegistry(httpClientFactory, repo));
 
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
         }

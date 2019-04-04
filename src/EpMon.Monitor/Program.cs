@@ -15,7 +15,7 @@ namespace EpMon.Monitor
             {
                 //RegisterServices();
                 
-                JobManager.Initialize(new MonitorRegistry());
+                JobManager.Initialize(new MonitorRegistry(new HttpClientFactory(), new EpMonRepository()));
 
                 //DisposeServices();
             }
@@ -30,7 +30,7 @@ namespace EpMon.Monitor
         private static void RegisterServices()
         {
             var collection = new ServiceCollection();
-            
+
             //collection.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
             //collection.AddTransient<EpMonRepository, EpMonRepository>();
 
