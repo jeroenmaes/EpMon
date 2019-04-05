@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace EpMon.Web.Core
 {
@@ -34,21 +35,21 @@ namespace EpMon.Web.Core
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<EpMonContext>(options => {
-                options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"));                
             });
 
             services.AddSingleton<HttpClientFactory, HttpClientFactory>();
 
             services.AddTransient<EpMonRepository, EpMonRepository>();
             services.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
-
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddMiniProfiler().AddEntityFramework();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime/*, ILoggerFactory loggerFactory*/)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
         {
 #if DEBUG
             app.UseMiniProfiler();
@@ -56,7 +57,7 @@ namespace EpMon.Web.Core
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
            
-            //loggerFactory.AddLog4Net();
+            loggerFactory.AddLog4Net();
             
             app.UseMvc(routes =>
             {

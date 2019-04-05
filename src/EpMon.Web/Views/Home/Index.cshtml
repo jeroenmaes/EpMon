@@ -3,6 +3,8 @@
 }
 
 @model EpMon.Web.Models.EndpointsOverview
+@using System.Globalization;
+
 
 <div class="row">
     <div class="col-md-12">
@@ -16,7 +18,7 @@
                             Not all endpoints are healthy
                             <small class="float-right">Refreshes every minute</small>
                         </h5>
-                    </div>                
+                    </div>
                 </div>
             }
         }
@@ -40,36 +42,36 @@
                 @foreach (var endpoint in tag.Value)
                 {
                     var lastStat = endpoint.Stats?.FirstOrDefault();
-                    
+
                     <tr>
 
-                    <td scope="row">
-                        @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
-                    </td>
-                    <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
-                    <td>@endpoint.CheckInterval min</td>
-                    @if (lastStat != null)
-                    {
-                        if (!lastStat.IsHealthy)
+                        <td scope="row">
+                            @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
+                        </td>
+                        <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
+                        <td>@endpoint.CheckInterval min</td>
+                        @if (lastStat != null)
                         {
-                            <td class="table-danger">
-                                NOK
-                           </td>
+                            if (!lastStat.IsHealthy)
+                            {
+                                <td class="table-danger">
+                                    NOK
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="table-success">
+                                    OK
+                                </td>
+                            }
                         }
-                        else
-                        {
-                            <td class="table-success">
-                                OK
-                            </td>
-                        }
-                    }
                         <td>
                             @if (lastStat != null)
                             {
-                                @lastStat.TimeStamp.ToLocalTime()
+                                @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
                             }
                         </td>
-                </tr>
+                    </tr>
                 }
             </table>
 

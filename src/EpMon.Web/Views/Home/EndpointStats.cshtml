@@ -7,6 +7,7 @@
 @using X.PagedList;
 @using X.PagedList.Mvc.Common
 @using X.PagedList.Mvc.Core
+@using System.Globalization;
 
 @model EpMon.Web.Models.EndpointDetails
 
@@ -33,11 +34,11 @@
                     </tr>
                     <tr>
                         <td>Last Checked</td>
-                        <td>@Model.LastStat.TimeStamp.ToLocalTime()</td>
+                        <td>@Model.LastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))</td>
                     </tr>
                 }
             }
-            
+
             <tr>
                 <td>Uptime</td>
                 <td>@Model.Uptime %</td>
@@ -98,15 +99,16 @@
                 <tr>
                     <td scope="row">@stat.IsHealthy</td>
                     <td>@stat.Status</td>
-                    <td>@stat.TimeStamp.ToLocalTime()</td>
+                    <td>@stat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))</td>
                     <td>@stat.ResponseTime</td>
                     <td>@jsonString</td>
                 </tr>
             }
         </table>
-        
-        @Html.PagedListPager((IPagedList)Model.Stats, page => Url.Action("EndpointStats", new { page = page }), 
-            new PagedListRenderOptions {
+
+        @Html.PagedListPager((IPagedList)Model.Stats, page => Url.Action("EndpointStats", new { page = page }),
+            new PagedListRenderOptions
+                 {
                 LiElementClasses = new string[] { "page-item" },
                 PageClasses = new string[] { "page-link" }
             })
