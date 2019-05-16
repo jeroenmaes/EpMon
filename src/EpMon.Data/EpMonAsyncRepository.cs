@@ -37,11 +37,14 @@ namespace EpMon.Data
             }
 
             foreach (var endpoint in endpoints.Where(x => x.IsActive))
-            {
-                endpoint.Stats = new List<EndpointStat>();
+            {                
                 var stat = await GetLastStatAsync(endpoint.Id);
-                endpoint.Stats.Add(stat);
-
+                if (stat != null)
+                {
+                    endpoint.Stats = new List<EndpointStat>();
+                    endpoint.Stats.Add(stat);
+                }
+                
                 returnValues.Add(endpoint);
             }
 

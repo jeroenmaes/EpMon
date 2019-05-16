@@ -23,8 +23,8 @@ namespace EpMon.Web.Core.Controllers
         public async Task<ActionResult> Index(string filter = "")
         {
             var endpoints = await _asyncRepo.GetEndpointsAsync(filter);
-            var endpointsByTag = endpoints.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
-            var unHealthyEndpoints = endpoints.Count(x => x.Stats?.FirstOrDefault().IsHealthy == false) > 0;
+            var endpointsByTag = endpoints?.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
+            var unHealthyEndpoints = endpoints?.Count(x => x.Stats?.FirstOrDefault().IsHealthy == false) > 0;
 
             Response.Headers.Add("Refresh", TimeSpan.FromMinutes(1).TotalSeconds.ToString());
 

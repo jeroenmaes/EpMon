@@ -35,7 +35,7 @@ namespace EpMon.Web.Core
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<EpMonContext>(options => {
-                options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"));                
+                options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"), ops => ops.EnableRetryOnFailure());                   
             });
 
             services.AddSingleton<HttpClientFactory, HttpClientFactory>();
