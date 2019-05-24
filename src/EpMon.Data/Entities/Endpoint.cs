@@ -13,6 +13,8 @@ namespace EpMon.Data.Entities
 
         public bool IsActive { get; set; }
 
+        public bool IsCritical { get; set; }
+
         public ICollection<EndpointStat> Stats { get; set; }
     }
 

@@ -24,7 +24,7 @@ namespace EpMon.Web.Core.Controllers
         {
             var endpoints = await _asyncRepo.GetEndpointsAsync(filter);
             var endpointsByTag = endpoints?.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
-            var unHealthyEndpoints = endpoints?.Count(x => x.Stats?.FirstOrDefault().IsHealthy == false) > 0;
+            var unHealthyEndpoints = endpoints?.Where(y => y.IsCritical).Count(x => x.Stats?.FirstOrDefault().IsHealthy == false) > 0;
 
             Response.Headers.Add("Refresh", TimeSpan.FromMinutes(1).TotalSeconds.ToString());
 

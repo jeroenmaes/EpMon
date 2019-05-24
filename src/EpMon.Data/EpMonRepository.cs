@@ -53,7 +53,8 @@ namespace EpMon.Data
                         Tags = "Personal",
                         Url = @"http:\\blog.jeroenmaes.eu",
                         Name = @"blog.jeroenmaes.eu",
-                        IsActive = true
+                        IsActive = true,
+                        IsCritical = true
                     });
                 }
 
