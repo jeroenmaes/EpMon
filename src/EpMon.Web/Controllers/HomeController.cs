@@ -20,7 +20,14 @@ namespace EpMon.Web.Core.Controllers
             _asyncRepo = asyncRepo;
         }
         
-        public async Task<ActionResult> Index(string filter = "")
+        public async Task<ActionResult> Index()
+        {
+            var tags = await _asyncRepo.GetTagsAsync();
+           
+            return View(new EndpointTags { Tags = tags });
+        }
+
+        public async Task<ActionResult> Status(string filter = "")
         {
             var endpoints = await _asyncRepo.GetEndpointsAsync(filter);
             var endpointsByTag = endpoints?.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
@@ -29,6 +36,15 @@ namespace EpMon.Web.Core.Controllers
             Response.Headers.Add("Refresh", TimeSpan.FromMinutes(1).TotalSeconds.ToString());
 
             return View(new EndpointsOverview { EndpointsByTag = endpointsByTag, UnHealthyEndpoints = unHealthyEndpoints });
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Endpoints2(string tagName = "")
+        {
+            var endpoints = await _asyncRepo.GetEndpointsAsync(tagName);
+                       
+            return PartialView("EndpointOverview", new EndpointsOverview2 { TagName = tagName, Endpoints = endpoints.ToList() });
+
         }
 
         public async Task<ActionResult> EndpointStats(int? id, int? page, string start = "", string end = "")

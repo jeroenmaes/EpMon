@@ -1,0 +1,61 @@
+﻿@model EpMon.Web.Models.EndpointsOverview2
+
+@using System.Globalization;
+
+<h3>@Model.TagName <small class="text-muted" style="">(@Model.Endpoints.Count)</small></h3>
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Interval</th>
+            <th scope="col">Critical</th>
+            <th scope="col">Healthy</th>
+            <th scope="col">Last Checked</th>
+        </tr>
+    </thead>
+
+    @foreach (var endpoint in @Model.Endpoints)
+    {
+        var lastStat = endpoint.Stats?.FirstOrDefault();
+
+        <tr>
+
+            <td scope="row">
+                @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
+            </td>
+            <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
+            <td>@endpoint.CheckInterval min</td>
+            <td>@endpoint.IsCritical</td>
+            @if (lastStat != null)
+            {
+                if (!lastStat.IsHealthy && endpoint.IsCritical == true)
+                {
+                    <td class="table-danger">
+                        NOK
+                    </td>
+                }
+                else if (!lastStat.IsHealthy && endpoint.IsCritical == false)
+                {
+                    <td class="table-warning">
+                        NOK
+                    </td>
+                }
+                else
+                {
+                    <td class="table-success">
+                        OK
+                    </td>
+                }
+            }
+            <td>
+                @if (lastStat != null)
+                {
+                    @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
+                }
+            </td>
+        </tr>
+    }
+</table>

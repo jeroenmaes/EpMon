@@ -22,6 +22,11 @@ namespace EpMon.Data
             return await _context.Endpoints.FirstOrDefaultAsync(q => q.Id == endpointId);
         }
 
+        public async Task<List<string>> GetTagsAsync()
+        {
+            return await _context.Endpoints.Select(x => x.Tags).Distinct().ToListAsync();
+        }
+
         public async Task<IEnumerable<Endpoint>> GetEndpointsAsync(string tagFilter)
         {
             IEnumerable<Endpoint> endpoints;
@@ -29,7 +34,7 @@ namespace EpMon.Data
 
             if (tagFilter != "")
             {
-                endpoints = await _context.Endpoints.Where(y => y.Tags.ToLower().Contains(tagFilter.ToLower())).ToListAsync();
+                endpoints = await _context.Endpoints.Where(y => y.Tags.ToLower().Equals(tagFilter.ToLower())).ToListAsync();
             }
             else
             {
@@ -69,7 +74,7 @@ namespace EpMon.Data
 
         public async Task<EndpointStat> GetLastStatAsync(int endpointId)
         {
-            var stat = _context.EndpointStats.Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).FirstOrDefaultAsync();
+            var stat = _context.EndpointStats.Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).Take(1).FirstOrDefaultAsync();
 
             return await stat;
         }

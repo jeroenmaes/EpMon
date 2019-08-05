@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace EpMon.Web.Core
@@ -14,7 +15,7 @@ namespace EpMon.Web.Core
 
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -38,34 +39,34 @@ namespace EpMon.Web.Core
                 options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"), ops => ops.EnableRetryOnFailure());                   
             });
 
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AutomaticAuthentication = false;
+            });
+
             services.AddSingleton<HttpClientFactory, HttpClientFactory>();
 
             services.AddTransient<EpMonRepository, EpMonRepository>();
             services.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
-            
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddMiniProfiler().AddEntityFramework();
+            services.AddMvc(options => options.EnableEndpointRouting = false);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
         {
-#if DEBUG
-            app.UseMiniProfiler();
-#endif
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
            
             loggerFactory.AddLog4Net();
-            
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
 
             var httpClientFactory = app.ApplicationServices.GetRequiredService<HttpClientFactory>();
             var repo = app.ApplicationServices.GetRequiredService<EpMonRepository>();

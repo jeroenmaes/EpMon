@@ -15,7 +15,7 @@ namespace EpMon.Web.Core
                 .UseApplicationInsights()
                 .CaptureStartupErrors(true) // the default
                 .UseSetting("detailedErrors", "true")
-                .UseIISIntegration()
+                .UseIIS()
                 .UseStartup<Startup>();
     }
 }

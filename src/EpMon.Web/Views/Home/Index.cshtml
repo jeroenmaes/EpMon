@@ -2,15 +2,16 @@
     ViewBag.Title = "EpMon";
 }
 
-@model EpMon.Web.Models.EndpointsOverview
+@model EpMon.Web.Models.EndpointTags
 @using System.Globalization;
+@using EpMon.Web.Models;
 
 
 <div class="row">
     <div class="col-md-12">
-        <h2 class="mb-2">Endpoints <small class="text-muted" style="">@Model.EndpointsByTag.Sum(x => x.Value.Count) monitored (@DateTime.Now)</small></h2>
+        <h2 class="mb-2">Endpoints <small class="text-muted" style="">(@Model.Tags.Count)</small></h2>
         @{
-            if (@Model.UnHealthyEndpoints)
+            @*if (@Model.UnHealthyEndpoints)
             {
                 <div class="alert alert-warning" role="alert">
                     <div class="panel-heading">
@@ -20,70 +21,39 @@
                         </h5>
                     </div>
                 </div>
-            }
+            }*@
         }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-        @foreach (var tag in Model.EndpointsByTag)
+        @foreach (var tag in Model.Tags)
         {
-            <h3>@tag.Key <small class="text-muted" style="">(@tag.Value.Count)</small></h3>
+            var stage = tag;
+            //var endpoints = tag.Value;
 
-            <table class="table">
+            //await Html.RenderPartialAsync("EndpointOverview", new EndpointsOverview2 { TagName = stage, Endpoints = endpoints });
 
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Interval</th>
-                        <th scope="col">Critical</th>
-                        <th scope="col">Healthy</th>
-                        <th scope="col">Last Checked</th>
-                    </tr>
-                </thead>
+            <div id="@stage">Loading '@tag' endpoints...</div>
 
-                @foreach (var endpoint in tag.Value)
-                {
-                    var lastStat = endpoint.Stats?.FirstOrDefault();
-
-            <tr>
-
-                <td scope="row">
-                    @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
-                </td>
-                <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
-                <td>@endpoint.CheckInterval min</td>
-                <td>@endpoint.IsCritical</td>
-                @if (lastStat != null)
-                {
-                    if (!lastStat.IsHealthy && endpoint.IsCritical == true)
-                    {
-                        <td class="table-danger">
-                            NOK
-                        </td>
-                    }
-                    if (!lastStat.IsHealthy && endpoint.IsCritical == false)
-                    {
-                        <td class="table-warning">
-                            NOK
-                        </td>
-                    }
-                    else
-                    {
-                        <td class="table-success">
-                            OK
-                        </td>
-                    }
+            <script type="text/javascript">
+                var rootDir = "@Url.Content("~/")";
+                function loadEndpointData(tagName){
+                    $.ajax({
+                        type: "GET",
+                        url: rootDir + 'Home/Endpoints2?tagName=' + tagName,
+                        success: function (result) {
+                            $('#' + tagName).html(result);
+                        }
+                    });
                 }
-                <td>
-                    @if (lastStat != null)
-                    {
-                        @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
-                    }
-                </td>
-            </tr>
-                }
-            </table>
 
+                loadEndpointData('@stage')
+
+                setInterval(function(){
+                    loadEndpointData('@stage') // this will run after every 60 seconds
+                }, 60000);
+
+            </script>
         }
     </div>
 
-</div>
+        </div>
