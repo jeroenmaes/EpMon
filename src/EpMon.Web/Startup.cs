@@ -37,7 +37,7 @@ namespace EpMon.Web.Core
         {
             services.AddDbContext<EpMonContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"), ops => ops.EnableRetryOnFailure());                   
-            });
+            }, ServiceLifetime.Transient, ServiceLifetime.Transient);
 
             services.Configure<IISServerOptions>(options =>
             {
@@ -67,11 +67,8 @@ namespace EpMon.Web.Core
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            var httpClientFactory = app.ApplicationServices.GetRequiredService<HttpClientFactory>();
-            var repo = app.ApplicationServices.GetRequiredService<EpMonRepository>();
-
-            JobManager.Initialize(new MonitorRegistry(httpClientFactory, repo));
+                        
+            JobManager.Initialize(new MonitorRegistry(app.ApplicationServices));
 
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
         }

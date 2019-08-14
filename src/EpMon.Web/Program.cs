@@ -11,8 +11,7 @@ namespace EpMon.Web.Core
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseApplicationInsights()
+            WebHost.CreateDefaultBuilder(args)                
                 .CaptureStartupErrors(true) // the default
                 .UseSetting("detailedErrors", "true")
                 .UseIIS()

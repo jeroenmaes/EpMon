@@ -24,7 +24,7 @@ namespace EpMon.Web.Core.Controllers
         {
             var tags = await _asyncRepo.GetTagsAsync();
            
-            return View(new EndpointTags { Tags = tags });
+            return View(new EndpointTags { Tags = tags.ToList() });
         }
 
         public async Task<ActionResult> Status(string filter = "")

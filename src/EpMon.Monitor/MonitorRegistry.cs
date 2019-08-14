@@ -1,4 +1,6 @@
-﻿using EpMon.Data;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
+using EpMon.Data;
 using FluentScheduler;
 using System.Linq;
 
@@ -8,12 +10,16 @@ namespace EpMon.Monitor
     {
         private readonly HttpClientFactory _httpClientFactory;
         private readonly EpMonRepository _epMonRepository;
+        
+        private readonly IServiceProvider _serviceProvider;
 
-        public MonitorRegistry(HttpClientFactory httpClientFactory, EpMonRepository epMonRepository)
+        public MonitorRegistry(IServiceProvider serviceProvider)
         {
-            _epMonRepository = epMonRepository;
-            _httpClientFactory = httpClientFactory;
-            
+            _serviceProvider = serviceProvider;
+        
+            _httpClientFactory = _serviceProvider.GetService<HttpClientFactory>();
+            _epMonRepository = _serviceProvider.GetService<EpMonRepository>();
+
             var endpoints = _epMonRepository.GetEndpoints();
 
             NonReentrantAsDefault();
@@ -22,6 +28,8 @@ namespace EpMon.Monitor
 
             foreach (var endpoint in endpoints.Where(x => x.IsActive))
             {
+                var _epMonRepository = _serviceProvider.GetService<EpMonRepository>();
+
                 Schedule(() => new MonitorJob(endpoint, _httpClientFactory, _epMonRepository)).WithName($"EndpointId={endpoint.Id}")
                     .ToRunNow()
                     .AndEvery(endpoint.CheckInterval).Minutes();

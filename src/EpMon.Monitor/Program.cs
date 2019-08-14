@@ -1,6 +1,7 @@
 ﻿using System;
 using EpMon.Data;
 using FluentScheduler;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EpMon.Monitor
@@ -13,11 +14,10 @@ namespace EpMon.Monitor
         {
             try
             {
-                //RegisterServices();
-                
-                JobManager.Initialize(new MonitorRegistry(new HttpClientFactory(), new EpMonRepository()));
+                RegisterServices();
+                               
+                JobManager.Initialize(new MonitorRegistry(_serviceProvider));
 
-                //DisposeServices();
             }
             catch (Exception e)
             {
@@ -25,14 +25,19 @@ namespace EpMon.Monitor
             }
 
             Console.ReadKey();
+
+            DisposeServices();
+
         }
 
         private static void RegisterServices()
         {
             var collection = new ServiceCollection();
 
-            //collection.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
-            //collection.AddTransient<EpMonRepository, EpMonRepository>();
+            collection.AddDbContext<EpMonContext>(ServiceLifetime.Transient);
+
+            collection.AddSingleton<HttpClientFactory, HttpClientFactory>();
+            collection.AddTransient<EpMonRepository, EpMonRepository>();
 
             _serviceProvider = collection.BuildServiceProvider();
         }

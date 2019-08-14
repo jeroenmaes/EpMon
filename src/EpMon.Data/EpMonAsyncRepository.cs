@@ -10,7 +10,7 @@ namespace EpMon.Data
 {
     public class EpMonAsyncRepository
     {
-        internal EpMonContext _context;
+        private readonly EpMonContext _context;
 
         public EpMonAsyncRepository(EpMonContext context)
         {
@@ -19,12 +19,12 @@ namespace EpMon.Data
 
         public async Task<Endpoint> GetEndpointAsync(int endpointId)
         {
-            return await _context.Endpoints.FirstOrDefaultAsync(q => q.Id == endpointId);
+            return await _context.Endpoints.AsNoTracking().FirstOrDefaultAsync(q => q.Id == endpointId);
         }
 
-        public async Task<List<string>> GetTagsAsync()
+        public async Task<IEnumerable<string>> GetTagsAsync()
         {
-            return await _context.Endpoints.Select(x => x.Tags).Distinct().ToListAsync();
+            return await _context.Endpoints.AsNoTracking().Select(x => x.Tags).Distinct().ToListAsync();
         }
 
         public async Task<IEnumerable<Endpoint>> GetEndpointsAsync(string tagFilter)
@@ -34,11 +34,11 @@ namespace EpMon.Data
 
             if (tagFilter != "")
             {
-                endpoints = await _context.Endpoints.Where(y => y.Tags.ToLower().Equals(tagFilter.ToLower())).ToListAsync();
+                endpoints = await _context.Endpoints.AsNoTracking().Where(y => y.Tags.ToLower().Equals(tagFilter.ToLower())).ToListAsync();
             }
             else
             {
-                endpoints = await _context.Endpoints.ToListAsync();
+                endpoints = await _context.Endpoints.AsNoTracking().ToListAsync();
             }
 
             foreach (var endpoint in endpoints.Where(x => x.IsActive))
@@ -59,14 +59,14 @@ namespace EpMon.Data
 
         public async Task<IEnumerable<EndpointStat>> GetStatsAsync(int endpointId, int maxHours)
         {
-            return await _context.EndpointStats.Where(q => q.EndpointId == endpointId)
+            return await _context.EndpointStats.AsNoTracking().Where(q => q.EndpointId == endpointId)
                 .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-maxHours))
                 .OrderByDescending(x => x.TimeStamp).ToListAsync();
         }
 
         public async Task<IEnumerable<EndpointStat>> GetStatsAsync(int endpointId, int maxHours, int pageNumber, int pageSize)
         {
-            return await _context.EndpointStats.Where(q => q.EndpointId == endpointId)
+            return await _context.EndpointStats.AsNoTracking().Where(q => q.EndpointId == endpointId)
                                     .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-maxHours))
                                     .OrderByDescending(x => x.TimeStamp)
                                     .ToPagedListAsync(pageNumber, pageSize);
@@ -74,7 +74,7 @@ namespace EpMon.Data
 
         public async Task<EndpointStat> GetLastStatAsync(int endpointId)
         {
-            var stat = _context.EndpointStats.Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).Take(1).FirstOrDefaultAsync();
+            var stat = _context.EndpointStats.AsNoTracking().Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).Take(1).FirstOrDefaultAsync();
 
             return await stat;
         }

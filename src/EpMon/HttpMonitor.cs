@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace EpMon
 {
@@ -32,26 +33,40 @@ namespace EpMon
             var baseUri = UriHelper.GetBaseUri(address);
             var httpClient = HttpClientFactory.Create(new Uri(baseUri));
 
-            using (var response = httpClient.GetAsync(address).Result)
-            {
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                    return new HealthInfo(HealthStatus.NotExists);
-                if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
-                    return new HealthInfo(HealthStatus.Offline);
-                if (response.IsSuccessStatusCode)
-                    return new HealthInfo(HealthStatus.Healthy, ReadContent(response));
+            var response = MakeAsyncCall<HttpResponseMessage>(() => httpClient.GetAsync(address));
 
-                return new HealthInfo(HealthStatus.Faulty, ReadContent(response));
-            }
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return new HealthInfo(HealthStatus.NotExists);
+            if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                return new HealthInfo(HealthStatus.Offline);
+            if (response.IsSuccessStatusCode)
+                return new HealthInfo(HealthStatus.Healthy, ReadContent(response));
+
+            return new HealthInfo(HealthStatus.Faulty, ReadContent(response));            
         }
 
         private IReadOnlyDictionary<string, string> ReadContent(HttpResponseMessage response)
-        {
+        {            
+            string response2 = MakeAsyncCall<string>(() => response.Content.ReadAsStringAsync());
+
             return new Dictionary<string, string>
             {
                 {"code", response.StatusCode.ToString()},
-                {"content", response.Content.ReadAsStringAsync().Result},
+                {"content", response2},
             };
+        }
+
+        private T MakeAsyncCall<T>(Func<Task<T>> asyncCall)
+        {
+            //https://blogs.msdn.microsoft.com/jpsanders/2017/08/28/asp-net-do-not-use-task-result-in-main-context/
+
+            Task<T> callTask = Task.Run(asyncCall);
+
+            callTask.Wait();
+
+            var response = callTask.Result;
+
+            return response;
         }
     }
 }
