@@ -5,4 +5,4 @@ The tool offers a solution to monitor multiple http endpoints that implement the
 
 # Screenshot
 
-![EpMon Overview](img/epmon-overview.png.png)
+![EpMon Overview](img/epmon-overview.png)
