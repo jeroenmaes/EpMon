@@ -2,13 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using EpMon.Data;
+using EpMon.Web.Api;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EpMon.Web.Core.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ConfigurationController : ControllerBase
+{    
+    public class ConfigurationController :  BaseApiController
     {
         private readonly EpMonAsyncRepository _asyncRepo;
         
@@ -17,7 +16,7 @@ namespace EpMon.Web.Core.Controllers
             _asyncRepo = asyncRepo;
         }
 
-        [HttpGet]
+        [HttpGet("/configuration")]
         public async Task<IEnumerable<string>> Get()
         {
             return (await _asyncRepo.GetEndpointsAsync("")).Select(x => x.Url);

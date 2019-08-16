@@ -43,4 +43,9 @@
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="ApiModels\" />
+  </ItemGroup>
+
 </Project>
