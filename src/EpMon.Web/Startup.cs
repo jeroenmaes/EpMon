@@ -1,4 +1,6 @@
-﻿using EpMon.Data;
+﻿using System.Net;
+using System.Threading;
+using EpMon.Data;
 using EpMon.Monitor;
 using FluentScheduler;
 using Microsoft.AspNetCore.Builder;
@@ -23,6 +25,9 @@ namespace EpMon.Web.Core
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            
+            ServicePointManager.DefaultConnectionLimit = 1000;
+            ThreadPool.SetMinThreads(100, 100);
         }
 
         private void OnShutdown()
@@ -50,7 +55,6 @@ namespace EpMon.Web.Core
             services.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

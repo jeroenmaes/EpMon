@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Threading;
 using EpMon.Data;
 using FluentScheduler;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,9 @@ namespace EpMon.Monitor
 
         static void Main(string[] args)
         {
+            ServicePointManager.DefaultConnectionLimit = 1000;
+            ThreadPool.SetMinThreads(100, 100);
+
             try
             {
                 RegisterServices();

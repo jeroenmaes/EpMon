@@ -15,15 +15,11 @@ namespace EpMon
         {
             Name = name;
             HttpClientFactory = new HttpClientFactory();
-
-            ServicePointManager.DefaultConnectionLimit = 100;
         }
         public HttpMonitor(string name, HttpClientFactory httpClientFactory)
         {
             Name = name;
             HttpClientFactory = httpClientFactory;
-
-            ServicePointManager.DefaultConnectionLimit = 100;
         }
 
         public string Name { get; }
