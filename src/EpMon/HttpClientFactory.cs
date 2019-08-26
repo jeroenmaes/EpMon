@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace EpMon
 {
-    public sealed class HttpClientFactory : IDisposable    // Register as singleton
+    public sealed class HttpClientFactory : IDisposable // Register as singleton
     {
         private readonly ConcurrentDictionary<Uri, HttpClient> _httpClients;
 
@@ -13,24 +13,21 @@ namespace EpMon
             _httpClients = new ConcurrentDictionary<Uri, HttpClient>();
         }
 
+        public void Dispose()
+        {
+            foreach (var httpClient in _httpClients.Values) httpClient.Dispose();
+        }
+
         private HttpClient Create(Uri baseAddress, HttpClientHandler handler)
         {
             return _httpClients.GetOrAdd(baseAddress,
-                b => new HttpClient(handler) { BaseAddress = b });
+                b => new HttpClient(handler) {BaseAddress = b});
         }
 
         public HttpClient Create(Uri baseAddress)
         {
-            var defaultHandler =  new HttpClientHandler { UseDefaultCredentials = true};
+            var defaultHandler = new HttpClientHandler {UseDefaultCredentials = true};
             return Create(baseAddress, defaultHandler);
-        }
-
-        public void Dispose()
-        {
-            foreach (var httpClient in _httpClients.Values)
-            {
-                httpClient.Dispose();
-            }
         }
     }
 }

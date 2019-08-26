@@ -9,13 +9,17 @@ namespace EpMon
     public class HttpMonitor : IHealthMonitor
     {
         public HttpClientFactory HttpClientFactory;
-        public HttpMonitor() : this("http") { }
+
+        public HttpMonitor() : this("http")
+        {
+        }
 
         public HttpMonitor(string name)
         {
             Name = name;
             HttpClientFactory = new HttpClientFactory();
         }
+
         public HttpMonitor(string name, HttpClientFactory httpClientFactory)
         {
             Name = name;
@@ -23,13 +27,13 @@ namespace EpMon
         }
 
         public string Name { get; }
-        
+
         public HealthInfo CheckHealth(string address)
         {
             var baseUri = UriHelper.GetBaseUri(address);
             var httpClient = HttpClientFactory.Create(new Uri(baseUri));
 
-            var response = MakeAsyncCall<HttpResponseMessage>(() => httpClient.GetAsync(address));
+            var response = MakeAsyncCall(() => httpClient.GetAsync(address));
 
             if (response.StatusCode == HttpStatusCode.NotFound)
                 return new HealthInfo(HealthStatus.NotExists);
@@ -38,17 +42,17 @@ namespace EpMon
             if (response.IsSuccessStatusCode)
                 return new HealthInfo(HealthStatus.Healthy, ReadContent(response));
 
-            return new HealthInfo(HealthStatus.Faulty, ReadContent(response));            
+            return new HealthInfo(HealthStatus.Faulty, ReadContent(response));
         }
 
         private IReadOnlyDictionary<string, string> ReadContent(HttpResponseMessage response)
-        {            
-            string response2 = MakeAsyncCall<string>(() => response.Content.ReadAsStringAsync());
+        {
+            var response2 = MakeAsyncCall(() => response.Content.ReadAsStringAsync());
 
             return new Dictionary<string, string>
             {
                 {"code", response.StatusCode.ToString()},
-                {"content", response2},
+                {"content", response2}
             };
         }
 
@@ -56,7 +60,7 @@ namespace EpMon
         {
             //https://blogs.msdn.microsoft.com/jpsanders/2017/08/28/asp-net-do-not-use-task-result-in-main-context/
 
-            Task<T> callTask = Task.Run(asyncCall);
+            var callTask = Task.Run(asyncCall);
 
             callTask.Wait();
 
