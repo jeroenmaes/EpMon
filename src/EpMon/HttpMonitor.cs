@@ -33,7 +33,7 @@ namespace EpMon
             var baseUri = UriHelper.GetBaseUri(address);
             var httpClient = HttpClientFactory.Create(new Uri(baseUri));
 
-            var response = MakeAsyncCall(() => httpClient.GetAsync(address));
+            var response = AsyncHelper.RunSync(() => httpClient.GetAsync(address));
 
             if (response.StatusCode == HttpStatusCode.NotFound)
                 return new HealthInfo(HealthStatus.NotExists);
@@ -47,26 +47,13 @@ namespace EpMon
 
         private IReadOnlyDictionary<string, string> ReadContent(HttpResponseMessage response)
         {
-            var response2 = MakeAsyncCall(() => response.Content.ReadAsStringAsync());
+            var response2 = AsyncHelper.RunSync(() => response.Content.ReadAsStringAsync());
 
             return new Dictionary<string, string>
             {
                 {"code", response.StatusCode.ToString()},
                 {"content", response2}
             };
-        }
-
-        private T MakeAsyncCall<T>(Func<Task<T>> asyncCall)
-        {
-            //https://blogs.msdn.microsoft.com/jpsanders/2017/08/28/asp-net-do-not-use-task-result-in-main-context/
-
-            var callTask = Task.Run(asyncCall);
-
-            callTask.Wait();
-
-            var response = callTask.Result;
-
-            return response;
         }
     }
 }
