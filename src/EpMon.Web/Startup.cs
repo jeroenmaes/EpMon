@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+
 namespace EpMon.Web.Core
 {
 
@@ -55,6 +56,11 @@ namespace EpMon.Web.Core
             services.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "EpMon API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,7 +77,13 @@ namespace EpMon.Web.Core
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-                        
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "EpMon API V1");
+            });
+
             JobManager.Initialize(new MonitorRegistry(app.ApplicationServices));
 
             applicationLifetime.ApplicationStopping.Register(OnShutdown);

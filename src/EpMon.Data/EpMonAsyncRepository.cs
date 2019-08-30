@@ -17,6 +17,12 @@ namespace EpMon.Data
             _context = context;
         }
 
+        public async Task AddEndpoint(Endpoint endpoint)
+        {
+            _context.Endpoints.Add(endpoint);
+             await _context.SaveChangesAsync();
+        }
+
         public async Task<Endpoint> GetEndpointAsync(int endpointId)
         {
             return await _context.Endpoints.AsNoTracking().FirstOrDefaultAsync(q => q.Id == endpointId);
@@ -77,6 +83,12 @@ namespace EpMon.Data
             var stat = _context.EndpointStats.AsNoTracking().Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).Take(1).FirstOrDefaultAsync();
 
             return await stat;
+        }
+
+        public async Task DeleteEndpointById(int endpointId)
+        {
+            _context.Endpoints.Remove(await GetEndpointAsync(endpointId));
+            await _context.SaveChangesAsync();
         }
     }
 }
