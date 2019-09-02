@@ -90,5 +90,20 @@ namespace EpMon.Data
             _context.Endpoints.Remove(await GetEndpointAsync(endpointId));
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateEndpoint(Endpoint endpoint)
+        {
+            var endpointEntity = _context.Endpoints.SingleOrDefault(x => x.Id == endpoint.Id);
+
+            endpointEntity.Name = endpoint.Name;
+            endpointEntity.Url = endpoint.Url;
+            endpointEntity.CheckInterval = endpoint.CheckInterval;
+            endpointEntity.CheckType = endpoint.CheckType;
+            endpointEntity.IsActive = endpoint.IsActive;
+            endpointEntity.IsCritical = endpoint.IsCritical;
+            endpointEntity.Tags = endpointEntity.Tags;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

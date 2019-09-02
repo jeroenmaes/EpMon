@@ -20,8 +20,10 @@ namespace EpMon.Monitor
             try
             {
                 RegisterServices();
-                               
-                JobManager.Initialize(new MonitorRegistry(_serviceProvider));
+
+                JobManager.UseUtcTime();
+                JobManager.Initialize(new MonitorJobRegistry(_serviceProvider));
+                JobManager.Initialize(new CleanupJobRegistry(_serviceProvider));
 
             }
             catch (Exception e)
@@ -43,7 +45,7 @@ namespace EpMon.Monitor
 
             collection.AddSingleton<HttpClientFactory, HttpClientFactory>();
             collection.AddTransient<EpMonRepository, EpMonRepository>();
-
+            
             _serviceProvider = collection.BuildServiceProvider();
         }
         private static void DisposeServices()

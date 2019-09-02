@@ -1,22 +1,23 @@
 ﻿using EpMon.Data;
-using EpMon.Web.Core.Models;
 using EpMon.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace EpMon.Web.Core.Controllers
 {
     public class HomeController : Controller
     {
         private readonly EpMonAsyncRepository _asyncRepo;
+        private readonly ILogger _logger;
 
-        public HomeController(EpMonAsyncRepository asyncRepo)
+        public HomeController(ILogger<HomeController> logger, EpMonAsyncRepository asyncRepo)
         {
+            _logger = logger;
             _asyncRepo = asyncRepo;
         }
         

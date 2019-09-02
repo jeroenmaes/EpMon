@@ -84,7 +84,10 @@ namespace EpMon.Web.Core
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "EpMon API V1");
             });
 
-            JobManager.Initialize(new MonitorRegistry(app.ApplicationServices));
+            
+            JobManager.UseUtcTime();
+            JobManager.Initialize(new MonitorJobRegistry(app.ApplicationServices));
+            JobManager.Initialize(new CleanupJobRegistry(app.ApplicationServices));
 
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
         }

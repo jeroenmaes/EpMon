@@ -10,7 +10,7 @@ namespace EpMon.Monitor
 {
     class MonitorJob
     {
-        private readonly ILogger<MonitorJob> _logger;
+        //private readonly ILogger _logger;
 
         private readonly Endpoint _endpoint;
 
@@ -18,13 +18,14 @@ namespace EpMon.Monitor
 
         private readonly EpMonRepository _repo;
 
-        public MonitorJob(Endpoint endpoint, HttpClientFactory httpClientFactory, EpMonRepository repo)
+        public MonitorJob(Endpoint endpoint, HttpClientFactory httpClientFactory, EpMonRepository repo/*, ILogger logger*/)
         {
             try
             {
                 _httpClientFactory = httpClientFactory;
                 _repo = repo;
                 _endpoint = endpoint;
+                //_logger = logger;
 
                 var endpointStat = CheckHealth();
                 
@@ -42,7 +43,7 @@ namespace EpMon.Monitor
                 _repo.AddEndpointStat(endpointStat);
 
             }
-            catch (Exception /*e*/)
+            catch (Exception e)
             {
                 //_logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e);
 
@@ -92,7 +93,7 @@ namespace EpMon.Monitor
                 Console.WriteLine($"{result.TimeStamp} :: Healthy : {_endpoint.Url} : {result.ResponseTime} ms");
                 Console.ResetColor();
 
-                //_logger.LogInformation($"{result.Status} : {Endpoint.Url} : {result.ResponseTime} ms");
+                //_logger.LogInformation($"{result.Status} : {_endpoint.Url} : {result.ResponseTime} ms");
             }
             else
             {
@@ -100,7 +101,7 @@ namespace EpMon.Monitor
                 Console.WriteLine($"{result.TimeStamp} :: NotHealthy : {_endpoint.Url}");
                 Console.ResetColor();
 
-                //_logger.LogError($"{result.TimeStamp} :: NotHealthy {Endpoint.Url} : {result.Message}");
+                //_logger.LogError($"{result.TimeStamp} :: NotHealthy {_endpoint.Url} : {result.Message}");
             }
         }
 
