@@ -53,7 +53,7 @@ namespace EpMon.Web.Core
             services.AddSingleton<HttpClientFactory, HttpClientFactory>();
 
             services.AddTransient<EpMonRepository, EpMonRepository>();
-            services.AddTransient<EpMonAsyncRepository, EpMonAsyncRepository>();
+            services.AddTransient<EndpointStore, EndpointStore>();
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
 

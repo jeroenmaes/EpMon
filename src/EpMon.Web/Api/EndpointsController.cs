@@ -12,27 +12,27 @@ namespace EpMon.Web.Core.Controllers
 {
     public class EndpointsController : BaseApiController
     {
-        private readonly EpMonAsyncRepository _asyncRepo;
+        private readonly EndpointStore _store;
         private readonly ILogger _logger;
 
 
-        public EndpointsController(ILogger<EndpointsController> logger, EpMonAsyncRepository asyncRepo)
+        public EndpointsController(ILogger<EndpointsController> logger, EndpointStore store)
         {
             _logger = logger;
-            _asyncRepo = asyncRepo;
+            _store = store;
         }
 
         [HttpPost("/endpoints")]
         public async Task RegisterEndpoint([FromBody]EndpointDto endpointDto)
         {
             var endpoint = new Endpoint { Name = endpointDto.Name, CheckInterval = endpointDto.CheckInterval, CheckType = (CheckType)endpointDto.CheckInterval, IsActive = endpointDto.IsActive, IsCritical = endpointDto.IsCritical, Tags = endpointDto.Tags, Url = endpointDto.Url };
-            await _asyncRepo.AddEndpoint(endpoint);
+            await _store.StoreEndpointAsync(endpoint);
         }
 
         [HttpPut("/endpoints/{id}")]
         public async Task UpdateEndpoint(int id, [FromBody]EndpointDto endpointDto)
         {
-            var endpoint = await _asyncRepo.GetEndpointAsync(id);
+            var endpoint = await _store.GetByEndpointIdAsync(id);
             
             if (!string.IsNullOrEmpty(endpointDto.Name))
                 endpoint.Name = endpointDto.Name;
@@ -48,19 +48,19 @@ namespace EpMon.Web.Core.Controllers
             endpoint.IsActive = endpointDto.IsActive;
             endpoint.IsCritical = endpointDto.IsCritical;
 
-            await _asyncRepo.UpdateEndpoint(endpoint);
+            await _store.UpdateEndpoint(endpoint);
         }
 
         [HttpGet("/endpoints")]
         public async Task<IEnumerable<EndpointDto>> GetEndpoints()
         {
-            return (await _asyncRepo.GetEndpointsAsync("")).Select(x => new EndpointDto { Name  = x.Name, CheckInterval = x.CheckInterval, CheckType = x.CheckInterval, IsActive = x.IsActive, Tags = x.Tags, IsCritical = x.IsCritical, Url = x.Url, Id = x.Id});
+            return (await _store.GetAllEndpointsAsync2("")).Select(x => new EndpointDto { Name  = x.Name, CheckInterval = x.CheckInterval, CheckType = x.CheckInterval, IsActive = x.IsActive, Tags = x.Tags, IsCritical = x.IsCritical, Url = x.Url, Id = x.Id});
         }
 
         [HttpDelete("/endpoints/{id}")]
         public async Task DeleteEndpoint(int id)
         {
-            await _asyncRepo.DeleteEndpointById(id);
+            await _store.DeleteEndpointById(id);
         }
     }
 }
