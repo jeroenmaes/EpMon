@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Http;
 
 namespace EpMon
@@ -20,6 +21,11 @@ namespace EpMon
 
         private HttpClient Create(Uri baseAddress, HttpClientHandler handler)
         {
+            //http://byterot.blogspot.com/2016/07/singleton-httpclient-dns.html
+            var sp = ServicePointManager.FindServicePoint(baseAddress);
+            if(sp.ConnectionLeaseTimeout == -1)
+                sp.ConnectionLeaseTimeout = 60 * 1000; // 1 minute
+
             return _httpClients.GetOrAdd(baseAddress,
                 b => new HttpClient(handler) {BaseAddress = b});
         }
