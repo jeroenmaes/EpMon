@@ -2,11 +2,12 @@
 using System.Net;
 using System.Threading;
 using EpMon.Data;
+using EpMon.Monitor;
 using FluentScheduler;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EpMon.Monitor
+namespace EpMon.ConsoleHost
 {
     class Program
     {
@@ -44,7 +45,10 @@ namespace EpMon.Monitor
             collection.AddDbContext<EpMonContext>(ServiceLifetime.Transient);
 
             collection.AddSingleton<HttpClientFactory, HttpClientFactory>();
+
             collection.AddTransient<EndpointStore, EndpointStore>();
+
+            collection.AddTransient<EndpointService, EndpointService>();
             
             _serviceProvider = collection.BuildServiceProvider();
         }

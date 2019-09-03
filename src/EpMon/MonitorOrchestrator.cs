@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using EpMon.Data;
 using FluentScheduler;
 using System.Linq;
+using EpMon.Monitor;
 using Microsoft.Extensions.Logging;
 
-namespace EpMon.Monitor
+namespace EpMon
 {
     public class MonitorOrchestrator : Registry
     {

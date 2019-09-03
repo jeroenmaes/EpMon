@@ -1,10 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29209.152
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon", "src\EpMon\EpMon.csproj", "{D0F1A0C8-7B7D-4119-9281-532394657896}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Monitor", "src\EpMon.Monitor\EpMon.Monitor.csproj", "{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.ConsoleHost", "src\EpMon.Monitor\EpMon.ConsoleHost.csproj", "{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Data", "src\EpMon.Data\EpMon.Data.csproj", "{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}"
 EndProject

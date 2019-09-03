@@ -34,7 +34,6 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EpMon.Data\EpMon.Data.csproj" />
     <ProjectReference Include="..\EpMon\EpMon.csproj" />
   </ItemGroup>
   <ItemGroup>

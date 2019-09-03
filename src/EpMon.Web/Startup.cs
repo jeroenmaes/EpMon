@@ -54,6 +54,8 @@ namespace EpMon.Web.Core
 
             services.AddTransient<EndpointStore, EndpointStore>();
 
+            services.AddTransient<EndpointService, EndpointService>();
+
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
             services.AddSwaggerGen(c =>

@@ -40,4 +40,10 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentScheduler" Version="5.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EpMon.Data\EpMon.Data.csproj" />
+  </ItemGroup>
 </Project>
