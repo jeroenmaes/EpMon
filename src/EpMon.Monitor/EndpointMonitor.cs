@@ -8,7 +8,7 @@ using System.Net;
 
 namespace EpMon.Monitor
 {
-    class MonitorJob
+    class EndpointMonitor
     {
         //private readonly ILogger _logger;
 
@@ -16,14 +16,14 @@ namespace EpMon.Monitor
 
         private readonly HttpClientFactory _httpClientFactory;
 
-        private readonly EpMonRepository _repo;
+        private readonly EndpointStore _store;
 
-        public MonitorJob(Endpoint endpoint, HttpClientFactory httpClientFactory, EpMonRepository repo/*, ILogger logger*/)
+        public EndpointMonitor(Endpoint endpoint, HttpClientFactory httpClientFactory, EndpointStore store/*, ILogger logger*/)
         {
             try
             {
                 _httpClientFactory = httpClientFactory;
-                _repo = repo;
+                _store = store;
                 _endpoint = endpoint;
                 //_logger = logger;
 
@@ -40,7 +40,7 @@ namespace EpMon.Monitor
 
                 //ConsoleLog(endpointStat);
 
-                _repo.AddEndpointStat(endpointStat);
+                _store.AddEndpointStat(endpointStat);
 
             }
             catch (Exception e)

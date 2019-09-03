@@ -7,13 +7,13 @@ using System.Linq;
 
 namespace EpMon.Monitor
 {
-    public class CleanupJobRegistry : Registry
+    public class CleanupOrchestrator : Registry
     {
-        private readonly EpMonRepository _epMonRepository;
+        private readonly EndpointStore _store;
 
-        public CleanupJobRegistry(IServiceProvider serviceProvider)
+        public CleanupOrchestrator(IServiceProvider serviceProvider)
         {
-            _epMonRepository = serviceProvider.GetService<EpMonRepository>();
+            _store = serviceProvider.GetService<EndpointStore>();
             
             NonReentrantAsDefault();
             
@@ -22,7 +22,7 @@ namespace EpMon.Monitor
         
         public void CleanData()
         {
-            _epMonRepository.CleanStats(30);
+            _store.RemoveEndpointStatsByDaysToKeep(30);
         }
     }
 }

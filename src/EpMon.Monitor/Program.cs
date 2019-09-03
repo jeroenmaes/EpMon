@@ -22,8 +22,8 @@ namespace EpMon.Monitor
                 RegisterServices();
 
                 JobManager.UseUtcTime();
-                JobManager.Initialize(new MonitorJobRegistry(_serviceProvider));
-                JobManager.Initialize(new CleanupJobRegistry(_serviceProvider));
+                JobManager.Initialize(new MonitorOrchestrator(_serviceProvider));
+                JobManager.Initialize(new CleanupOrchestrator(_serviceProvider));
 
             }
             catch (Exception e)
@@ -44,7 +44,7 @@ namespace EpMon.Monitor
             collection.AddDbContext<EpMonContext>(ServiceLifetime.Transient);
 
             collection.AddSingleton<HttpClientFactory, HttpClientFactory>();
-            collection.AddTransient<EpMonRepository, EpMonRepository>();
+            collection.AddTransient<EndpointStore, EndpointStore>();
             
             _serviceProvider = collection.BuildServiceProvider();
         }

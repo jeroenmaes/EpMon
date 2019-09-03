@@ -52,7 +52,6 @@ namespace EpMon.Web.Core
 
             services.AddSingleton<HttpClientFactory, HttpClientFactory>();
 
-            services.AddTransient<EpMonRepository, EpMonRepository>();
             services.AddTransient<EndpointStore, EndpointStore>();
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
@@ -86,8 +85,8 @@ namespace EpMon.Web.Core
 
             
             JobManager.UseUtcTime();
-            JobManager.Initialize(new MonitorJobRegistry(app.ApplicationServices));
-            JobManager.Initialize(new CleanupJobRegistry(app.ApplicationServices));
+            JobManager.Initialize(new MonitorOrchestrator(app.ApplicationServices));
+            JobManager.Initialize(new CleanupOrchestrator(app.ApplicationServices));
 
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
         }

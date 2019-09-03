@@ -8,18 +8,18 @@ using Microsoft.Extensions.Logging;
 
 namespace EpMon.Monitor
 {
-    public class MonitorJobRegistry : Registry
+    public class MonitorOrchestrator : Registry
     {
         private readonly HttpClientFactory _httpClientFactory;
-        private readonly EpMonRepository _epMonRepository;
+        private readonly EndpointStore _endpointStore;
         private readonly IServiceProvider _serviceProvider;
 
-        public MonitorJobRegistry(IServiceProvider serviceProvider)
+        public MonitorOrchestrator(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         
             _httpClientFactory = _serviceProvider.GetService<HttpClientFactory>();
-            _epMonRepository = _serviceProvider.GetService<EpMonRepository>();
+            _endpointStore = _serviceProvider.GetService<EndpointStore>();
             
             NonReentrantAsDefault();
             
@@ -29,14 +29,14 @@ namespace EpMon.Monitor
         public void MonitorJobs()
         {
             //Check endpoints in database
-            foreach (var endpoint in _epMonRepository.GetEndpoints().Where(x => x.IsActive))
+            foreach (var endpoint in _endpointStore.GetAllEndpoints().Where(x => x.IsActive))
             {
                 if (!GetActiveEndpointMonitorJobs().Contains(endpoint.Id))
                 {
-                    var epMonRepository = _serviceProvider.GetService<EpMonRepository>();
+                    var endpointStore = _serviceProvider.GetService<EndpointStore>();
                     //var logger = _serviceProvider.GetService<ILogger>();
 
-                    JobManager.AddJob(() => new MonitorJob(endpoint, _httpClientFactory, epMonRepository), 
+                    JobManager.AddJob(() => new EndpointMonitor(endpoint, _httpClientFactory, endpointStore), 
                         (s) => s.WithName($"MonitorEndpointId={endpoint.Id}")
                         .ToRunNow()
                         .AndEvery(endpoint.CheckInterval).Minutes());
@@ -64,7 +64,7 @@ namespace EpMon.Monitor
 
         private bool IsActiveEndpointJob(int endpointId)
         {
-            return _epMonRepository.GetEndpoints().Any(x => x.IsActive && x.Id == endpointId);
+            return _endpointStore.GetAllEndpoints().Any(x => x.IsActive && x.Id == endpointId);
         }
     }
 }

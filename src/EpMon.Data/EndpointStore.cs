@@ -17,12 +17,25 @@ namespace EpMon.Data
             _context = context;
         }
         
-        public async Task<IEnumerable<Endpoint>> GetAllEndpointsAsync()
+        public IEnumerable<Endpoint> GetAllEndpoints()
         {
-            return await _context.Endpoints.AsNoTracking().ToListAsync();
+            return _context.Endpoints.AsNoTracking();
         }
 
+        public void AddEndpointStat(EndpointStat stat)
+        {
+            _context.EndpointStats.Add(new EndpointStat { EndpointId = stat.EndpointId, IsHealthy = stat.IsHealthy, Message = stat.Message, ResponseTime = stat.ResponseTime, TimeStamp = stat.TimeStamp, Status = stat.Status });
+            _context.SaveChanges();
+        }
 
+        public void RemoveEndpointStatsByDaysToKeep(int daysToKeep)
+        {
+            var compareWith = DateTime.UtcNow.AddDays(-daysToKeep);
+            var statsToRemove = _context.EndpointStats.AsNoTracking().Where(x => (x.TimeStamp <= compareWith));
+            _context.EndpointStats.RemoveRange(statsToRemove);
+            _context.SaveChanges();
+        }
+        
         public async Task StoreEndpointAsync(Endpoint endpoint)
         {
             _context.Endpoints.Add(endpoint);
@@ -89,8 +102,7 @@ namespace EpMon.Data
 
             await _context.SaveChangesAsync();
         }
-
-
+        
         public async Task<IEnumerable<EndpointStat>> GetEndpointStatsAsync(int endpointId, int maxHours)
         {
             return await _context.EndpointStats.AsNoTracking().Where(q => q.EndpointId == endpointId)
@@ -110,20 +122,6 @@ namespace EpMon.Data
         {
             var stat = _context.EndpointStats.AsNoTracking().Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).Take(1).FirstOrDefaultAsync();
             return await stat;
-        }
-
-        public async Task AddEndpointStat(EndpointStat stat)
-        {
-            _context.EndpointStats.Add(new EndpointStat { EndpointId = stat.EndpointId, IsHealthy = stat.IsHealthy, Message = stat.Message, ResponseTime = stat.ResponseTime, TimeStamp = stat.TimeStamp, Status = stat.Status });
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task RemoveEndpointStatsByDaysToKeep(int daysToKeep)
-        {
-            var compareWith = DateTime.UtcNow.AddDays(-daysToKeep);
-            var statsToRemove = _context.EndpointStats.AsNoTracking().Where(x => (x.TimeStamp <= compareWith));
-            _context.EndpointStats.RemoveRange(statsToRemove);
-            await _context.SaveChangesAsync();
         }
     }
 }
