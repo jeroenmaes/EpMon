@@ -11,7 +11,6 @@ namespace EpMon
 {
     public class MonitorOrchestrator : Registry
     {
-        private readonly HttpClientFactory _httpClientFactory;
         private readonly EndpointStore _endpointStore;
         private readonly IServiceProvider _serviceProvider;
 
@@ -19,7 +18,6 @@ namespace EpMon
         {
             _serviceProvider = serviceProvider;
         
-            _httpClientFactory = _serviceProvider.GetService<HttpClientFactory>();
             _endpointStore = _serviceProvider.GetService<EndpointStore>();
             
             NonReentrantAsDefault();
@@ -34,10 +32,9 @@ namespace EpMon
             {
                 if (!GetActiveEndpointMonitorJobs().Contains(endpoint.Id))
                 {
-                    var endpointStore = _serviceProvider.GetService<EndpointStore>();
-                    //var logger = _serviceProvider.GetService<ILogger>();
+                    var endpointMonitor = _serviceProvider.GetService<EndpointMonitor>();
 
-                    JobManager.AddJob(() => new EndpointMonitor(endpoint, _httpClientFactory, endpointStore), 
+                    JobManager.AddJob(() => endpointMonitor.CheckHealth(endpoint), 
                         (s) => s.WithName($"MonitorEndpointId={endpoint.Id}")
                         .ToRunNow()
                         .AndEvery(endpoint.CheckInterval).Minutes());

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading;
 using EpMon.Data;
 using EpMon.Monitor;
@@ -41,19 +42,16 @@ namespace EpMon.Web.Core
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<EpMonContext>(options => {
-                options.UseSqlServer(Configuration.GetConnectionString("EpMonConnection"), ops => ops.EnableRetryOnFailure());                   
-            }, ServiceLifetime.Transient, ServiceLifetime.Transient);
-
+            services.AddDbContext<EpMonContext>(ServiceLifetime.Transient, ServiceLifetime.Transient);
+            
             services.Configure<IISServerOptions>(options =>
             {
                 options.AutomaticAuthentication = false;
             });
 
             services.AddSingleton<HttpClientFactory, HttpClientFactory>();
-
+            services.AddTransient<EndpointMonitor, EndpointMonitor>();
             services.AddTransient<EndpointStore, EndpointStore>();
-
             services.AddTransient<EndpointService, EndpointService>();
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
@@ -71,6 +69,8 @@ namespace EpMon.Web.Core
             app.UseStaticFiles();
            
             loggerFactory.AddLog4Net();
+
+            MigrateDatabase(app.ApplicationServices);
 
             app.UseMvc(routes =>
             {
@@ -91,6 +91,17 @@ namespace EpMon.Web.Core
             JobManager.Initialize(new CleanupOrchestrator(app.ApplicationServices));
 
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
+        }
+
+        private void MigrateDatabase(IServiceProvider services)
+        {
+            using (var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<EpMonContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }

@@ -11,8 +11,6 @@ namespace EpMon.Data
         public EpMonContext() : base()
         {
             LoadConnectionString();
-            
-           // Database.Migrate();
         }
 
         public EpMonContext(DbContextOptions<EpMonContext> options) : base(options)
@@ -24,7 +22,7 @@ namespace EpMon.Data
         {
             LoadConnectionString();
 
-            //optionsBuilder.UseSqlServer(_connectionString, options => options.EnableRetryOnFailure());
+            optionsBuilder.UseSqlServer(_connectionString, options => options.EnableRetryOnFailure());
 
             optionsBuilder.UseSqlServer(_connectionString, options => options.MigrationsAssembly("EpMon.Data"));
         }

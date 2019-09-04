@@ -6,29 +6,31 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 
-namespace EpMon.Monitor
+namespace EpMon
 {
-    class EndpointMonitor
+    public class EndpointMonitor
     {
-        //private readonly ILogger _logger;
-
-        private readonly Endpoint _endpoint;
-
+        private readonly ILogger _logger;
         private readonly HttpClientFactory _httpClientFactory;
-
         private readonly EndpointStore _store;
 
-        public EndpointMonitor(Endpoint endpoint, HttpClientFactory httpClientFactory, EndpointStore store/*, ILogger logger*/)
+        private Endpoint _endpoint;
+
+        public EndpointMonitor(HttpClientFactory httpClientFactory, EndpointStore store, ILogger<EndpointMonitor> logger)
         {
+            _httpClientFactory = httpClientFactory;
+            _store = store;
+            _logger = logger;
+        }
+
+        public void CheckHealth(Endpoint endpoint)
+        {
+
             try
             {
-                _httpClientFactory = httpClientFactory;
-                _store = store;
                 _endpoint = endpoint;
-                //_logger = logger;
-
                 var endpointStat = CheckHealth();
-                
+
                 if (endpoint.CheckType == CheckType.AvailabilityCheck)
                 {
                     Validate(endpointStat);
@@ -38,14 +40,14 @@ namespace EpMon.Monitor
                     ValidateCustom(endpointStat);
                 }
 
-                //ConsoleLog(endpointStat);
+                ConsoleLog(endpointStat);
 
                 _store.AddEndpointStat(endpointStat);
 
             }
             catch (Exception e)
-            {
-                //_logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e);
+            { 
+                _logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e);
 
                 throw;
             }
@@ -93,7 +95,7 @@ namespace EpMon.Monitor
                 Console.WriteLine($"{result.TimeStamp} :: Healthy : {_endpoint.Url} : {result.ResponseTime} ms");
                 Console.ResetColor();
 
-                //_logger.LogInformation($"{result.Status} : {_endpoint.Url} : {result.ResponseTime} ms");
+                _logger.LogInformation($"{result.Status} : {_endpoint.Url} : {result.ResponseTime} ms");
             }
             else
             {
@@ -101,7 +103,7 @@ namespace EpMon.Monitor
                 Console.WriteLine($"{result.TimeStamp} :: NotHealthy : {_endpoint.Url}");
                 Console.ResetColor();
 
-                //_logger.LogError($"{result.TimeStamp} :: NotHealthy {_endpoint.Url} : {result.Message}");
+                _logger.LogError($"{result.TimeStamp} :: NotHealthy {_endpoint.Url} : {result.Message}");
             }
         }
 
@@ -112,7 +114,7 @@ namespace EpMon.Monitor
 
         private EndpointStat CheckHealth()
         {
-            var result = new EndpointStat {EndpointId = _endpoint.Id};
+            var result = new EndpointStat { EndpointId = _endpoint.Id };
 
             var monitor = new HttpMonitor(_endpoint.Id.ToString(), _httpClientFactory);
             var sw = Stopwatch.StartNew();
@@ -124,8 +126,8 @@ namespace EpMon.Monitor
             result.Message = string.Empty;
             if (info.Details != null && info.Details.Any())
             {
-                if(info.Details.ContainsKey("code"))
-                    result.Status = (HttpStatusCode) Enum.Parse(typeof(HttpStatusCode), info.Details["code"]);
+                if (info.Details.ContainsKey("code"))
+                    result.Status = (HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), info.Details["code"]);
 
                 if (info.Details.ContainsKey("content"))
                     result.Message = info.Details["content"];

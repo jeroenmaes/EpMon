@@ -6,6 +6,7 @@ using EpMon.Monitor;
 using FluentScheduler;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace EpMon.ConsoleHost
 {
@@ -21,6 +22,7 @@ namespace EpMon.ConsoleHost
             try
             {
                 RegisterServices();
+                MigrateDatabase(_serviceProvider);
 
                 JobManager.UseUtcTime();
                 JobManager.Initialize(new MonitorOrchestrator(_serviceProvider));
@@ -42,12 +44,13 @@ namespace EpMon.ConsoleHost
         {
             var collection = new ServiceCollection();
 
-            collection.AddDbContext<EpMonContext>(ServiceLifetime.Transient);
+            collection.AddDbContext<EpMonContext>(ServiceLifetime.Transient, ServiceLifetime.Transient);
 
+            collection.AddLogging(configure => configure.AddLog4Net());
+            
             collection.AddSingleton<HttpClientFactory, HttpClientFactory>();
-
+            collection.AddTransient<EndpointMonitor, EndpointMonitor>();
             collection.AddTransient<EndpointStore, EndpointStore>();
-
             collection.AddTransient<EndpointService, EndpointService>();
             
             _serviceProvider = collection.BuildServiceProvider();
@@ -61,6 +64,17 @@ namespace EpMon.ConsoleHost
             if (_serviceProvider is IDisposable)
             {
                 ((IDisposable)_serviceProvider).Dispose();
+            }
+        }
+
+        private static void MigrateDatabase(IServiceProvider services)
+        {
+            using (var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<EpMonContext>())
+                {
+                    context.Database.Migrate();
+                }
             }
         }
     }
