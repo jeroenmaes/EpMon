@@ -18,9 +18,14 @@ namespace EpMon
             _store = store;
         }
         
-        public IEnumerable<Model.Endpoint> GetAllEndpoints()
+        public IEnumerable<Model.Endpoint> GetAllActiveEndpoints()
         {
-            return _store.GetAllEndpoints().Select(x => new Model.Endpoint { Name = x.Name });
+            return _store.GetAllEndpoints().Where(x => x.IsActive).Select(x => new Model.Endpoint { Name = x.Name, Id = x.Id, Url = x.Url, IsActive = x.IsActive, CheckInterval = x.CheckInterval, CheckType = (int)x.CheckType, Tags = x.Tags, IsCritical = x.IsCritical});
+        }
+
+        public void SaveHealthReport(int endpointId, HealthReport report)
+        {
+            _store.AddEndpointStat(new Data.Entities.EndpointStat { EndpointId = endpointId, IsHealthy = report.IsHealthy, Message = report.Message, ResponseTime = report.ResponseTime, TimeStamp = report.TimeStamp, Status = report.Status });
         }
     }
 }

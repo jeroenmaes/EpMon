@@ -24,14 +24,14 @@ namespace EpMon.Data
 
         public void AddEndpointStat(EndpointStat stat)
         {
-            _context.EndpointStats.Add(new EndpointStat { EndpointId = stat.EndpointId, IsHealthy = stat.IsHealthy, Message = stat.Message, ResponseTime = stat.ResponseTime, TimeStamp = stat.TimeStamp, Status = stat.Status });
+            _context.EndpointStats.Add(new EndpointStat { EndpointId =  stat.EndpointId, IsHealthy = stat.IsHealthy, Message = stat.Message, ResponseTime = stat.ResponseTime, TimeStamp = stat.TimeStamp, Status = stat.Status });
             _context.SaveChanges();
         }
 
         public void RemoveEndpointStatsByDaysToKeep(int daysToKeep)
         {
             var compareWith = DateTime.UtcNow.AddDays(-daysToKeep);
-            var statsToRemove = _context.EndpointStats.AsNoTracking().Where(x => (x.TimeStamp <= compareWith));
+            var statsToRemove = _context.EndpointStats.Where(x => (x.TimeStamp <= compareWith));
             _context.EndpointStats.RemoveRange(statsToRemove);
             _context.SaveChanges();
         }

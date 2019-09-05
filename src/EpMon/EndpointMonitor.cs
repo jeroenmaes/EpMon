@@ -12,38 +12,29 @@ namespace EpMon
     {
         private readonly ILogger _logger;
         private readonly HttpClientFactory _httpClientFactory;
-        private readonly EndpointStore _store;
+        private readonly EndpointService _service;
 
-        private Endpoint _endpoint;
+        private Model.Endpoint _endpoint;
 
-        public EndpointMonitor(HttpClientFactory httpClientFactory, EndpointStore store, ILogger<EndpointMonitor> logger)
+        public EndpointMonitor(HttpClientFactory httpClientFactory, EndpointService service, ILogger<EndpointMonitor> logger)
         {
             _httpClientFactory = httpClientFactory;
-            _store = store;
+            _service = service;
             _logger = logger;
         }
 
-        public void CheckHealth(Endpoint endpoint)
+        public void CheckHealth(Model.Endpoint endpoint)
         {
 
             try
             {
-                _endpoint = endpoint;
-                var endpointStat = CheckHealth();
+                this._endpoint = endpoint;
 
-                if (endpoint.CheckType == CheckType.AvailabilityCheck)
-                {
-                    Validate(endpointStat);
-                }
-                else if (endpoint.CheckType == CheckType.ContentCheck)
-                {
-                    ValidateCustom(endpointStat);
-                }
+                var healthReport = InternalCheckHealth();
+                
+                ConsoleLog(healthReport);
 
-                ConsoleLog(endpointStat);
-
-                _store.AddEndpointStat(endpointStat);
-
+                _service.SaveHealthReport(_endpoint.Id, healthReport);
             }
             catch (Exception e)
             { 
@@ -53,7 +44,7 @@ namespace EpMon
             }
         }
 
-        private void ValidateCustom(EndpointStat endpointStat)
+        private void ValidateCustom(HealthReport endpointStat)
         {
             if (endpointStat.Status == HttpStatusCode.OK)
             {
@@ -87,7 +78,7 @@ namespace EpMon
             return false;
         }
 
-        private void ConsoleLog(EndpointStat result)
+        private void ConsoleLog(HealthReport result)
         {
             if (result.IsHealthy)
             {
@@ -107,14 +98,14 @@ namespace EpMon
             }
         }
 
-        private void Validate(EndpointStat endpointStat)
+        private void Validate(HealthReport endpointStat)
         {
             endpointStat.IsHealthy = endpointStat.Status == HttpStatusCode.OK;
         }
 
-        private EndpointStat CheckHealth()
+        private HealthReport InternalCheckHealth()
         {
-            var result = new EndpointStat { EndpointId = _endpoint.Id };
+            var result = new HealthReport();
 
             var monitor = new HttpMonitor(_endpoint.Id.ToString(), _httpClientFactory);
             var sw = Stopwatch.StartNew();
@@ -139,6 +130,15 @@ namespace EpMon
                         result.Message = string.Empty;
                     }
                 }
+            }
+
+            if (_endpoint.CheckType == (int)CheckType.AvailabilityCheck)
+            {
+                Validate(result);
+            }
+            else if (_endpoint.CheckType == (int)CheckType.ContentCheck)
+            {
+                ValidateCustom(result);
             }
 
             return result;

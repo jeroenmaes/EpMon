@@ -11,15 +11,15 @@ namespace EpMon
 {
     public class MonitorOrchestrator : Registry
     {
-        private readonly EndpointStore _endpointStore;
+        private readonly EndpointService _endpointService;
         private readonly IServiceProvider _serviceProvider;
 
         public MonitorOrchestrator(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         
-            _endpointStore = _serviceProvider.GetService<EndpointStore>();
-            
+            _endpointService = _serviceProvider.GetService<EndpointService>();
+
             NonReentrantAsDefault();
             
             Schedule(() => MonitorJobs()).WithName("MonitorJobs").ToRunNow().AndEvery(1).Minutes();
@@ -28,7 +28,7 @@ namespace EpMon
         public void MonitorJobs()
         {
             //Check endpoints in database
-            foreach (var endpoint in _endpointStore.GetAllEndpoints().Where(x => x.IsActive))
+            foreach (var endpoint in _endpointService.GetAllActiveEndpoints())
             {
                 if (!GetActiveEndpointMonitorJobs().Contains(endpoint.Id))
                 {
@@ -62,7 +62,7 @@ namespace EpMon
 
         private bool IsActiveEndpointJob(int endpointId)
         {
-            return _endpointStore.GetAllEndpoints().Any(x => x.IsActive && x.Id == endpointId);
+            return _endpointService.GetAllActiveEndpoints().Any(x => x.Id == endpointId);
         }
     }
 }
