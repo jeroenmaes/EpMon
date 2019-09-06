@@ -2,7 +2,7 @@
 using System.Net;
 using System.Threading;
 using EpMon.Data;
-using EpMon.Monitor;
+using EpMon;
 using FluentScheduler;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

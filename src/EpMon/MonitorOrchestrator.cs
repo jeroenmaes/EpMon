@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using EpMon.Data;
 using FluentScheduler;
 using System.Linq;
-using EpMon.Monitor;
+using EpMon;
 using Microsoft.Extensions.Logging;
 
 namespace EpMon

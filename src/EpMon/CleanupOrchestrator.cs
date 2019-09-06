@@ -5,7 +5,7 @@ using EpMon.Data;
 using FluentScheduler;
 using System.Linq;
 
-namespace EpMon.Monitor
+namespace EpMon
 {
     public class CleanupOrchestrator : Registry
     {

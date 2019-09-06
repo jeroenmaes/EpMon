@@ -28,7 +28,7 @@ namespace EpMon
 
             try
             {
-                this._endpoint = endpoint;
+                _endpoint = endpoint;
 
                 var healthReport = InternalCheckHealth();
                 
@@ -38,9 +38,7 @@ namespace EpMon
             }
             catch (Exception e)
             { 
-                _logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e);
-
-                throw;
+                _logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e.Message);
             }
         }
 

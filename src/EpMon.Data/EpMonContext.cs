@@ -1,4 +1,6 @@
-﻿using EpMon.Data.Entities;
+﻿using System;
+using System.Reflection;
+using EpMon.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -22,9 +24,12 @@ namespace EpMon.Data
         {
             LoadConnectionString();
 
-            optionsBuilder.UseSqlServer(_connectionString, options => options.EnableRetryOnFailure());
+            //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+            optionsBuilder.UseSqlServer(_connectionString, options => 
+                options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
 
-            optionsBuilder.UseSqlServer(_connectionString, options => options.MigrationsAssembly("EpMon.Data"));
+            optionsBuilder.UseSqlServer(_connectionString, options => 
+                options.MigrationsAssembly(typeof(EpMonContext).GetTypeInfo().Assembly.GetName().Name));
         }
 
 

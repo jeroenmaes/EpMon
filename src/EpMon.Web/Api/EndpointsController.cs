@@ -48,7 +48,7 @@ namespace EpMon.Web.Core.Controllers
             endpoint.IsActive = endpointDto.IsActive;
             endpoint.IsCritical = endpointDto.IsCritical;
 
-            await _store.UpdateEndpoint(endpoint);
+            await _store.UpdateEndpointAsync(endpoint);
         }
 
         [HttpGet("/endpoints")]

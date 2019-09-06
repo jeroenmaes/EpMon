@@ -16,7 +16,7 @@ namespace EpMon.Data
         {
             _context = context;
         }
-        
+
         public IEnumerable<Endpoint> GetAllEndpoints()
         {
             return _context.Endpoints.AsNoTracking();
@@ -24,18 +24,28 @@ namespace EpMon.Data
 
         public void AddEndpointStat(EndpointStat stat)
         {
-            _context.EndpointStats.Add(new EndpointStat { EndpointId =  stat.EndpointId, IsHealthy = stat.IsHealthy, Message = stat.Message, ResponseTime = stat.ResponseTime, TimeStamp = stat.TimeStamp, Status = stat.Status });
-            _context.SaveChanges();
+            using var context = new EpMonContext();
+            context.EndpointStats.Add(new EndpointStat
+            {
+                EndpointId = stat.EndpointId,
+                IsHealthy = stat.IsHealthy,
+                Message = stat.Message,
+                ResponseTime = stat.ResponseTime,
+                TimeStamp = stat.TimeStamp,
+                Status = stat.Status
+            });
+            context.SaveChanges();
         }
 
         public void RemoveEndpointStatsByDaysToKeep(int daysToKeep)
         {
+            using var context = new EpMonContext();
             var compareWith = DateTime.UtcNow.AddDays(-daysToKeep);
-            var statsToRemove = _context.EndpointStats.Where(x => (x.TimeStamp <= compareWith));
-            _context.EndpointStats.RemoveRange(statsToRemove);
-            _context.SaveChanges();
+            var statsToRemove = context.EndpointStats.Where(x => (x.TimeStamp <= compareWith));
+            context.EndpointStats.RemoveRange(statsToRemove);
+            context.SaveChanges();
         }
-        
+
         public async Task StoreEndpointAsync(Endpoint endpoint)
         {
             _context.Endpoints.Add(endpoint);
@@ -81,14 +91,14 @@ namespace EpMon.Data
 
             return returnValues;
         }
-        
+
         public async Task DeleteEndpointById(int endpointId)
         {
             _context.Endpoints.Remove(await GetByEndpointIdAsync(endpointId));
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateEndpoint(Endpoint endpoint)
+        public async Task UpdateEndpointAsync(Endpoint endpoint)
         {
             var endpointEntity = _context.Endpoints.SingleOrDefault(x => x.Id == endpoint.Id);
 
@@ -102,7 +112,7 @@ namespace EpMon.Data
 
             await _context.SaveChangesAsync();
         }
-        
+
         public async Task<IEnumerable<EndpointStat>> GetEndpointStatsAsync(int endpointId, int maxHours)
         {
             return await _context.EndpointStats.AsNoTracking().Where(q => q.EndpointId == endpointId)
