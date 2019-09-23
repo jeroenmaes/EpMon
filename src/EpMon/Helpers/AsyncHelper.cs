@@ -1,10 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EpMon
+namespace EpMon.Helpers
 {
     //https://github.com/aspnet/AspNetIdentity/blob/master/src/Microsoft.AspNet.Identity.Core/AsyncHelper.cs
     //https://www.ryadel.com/en/asyncutil-c-helper-class-async-method-sync-result-wait/

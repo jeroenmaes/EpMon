@@ -5,20 +5,25 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using EpMon.Infrastructure;
+using EpMon.Model;
+using EpMon.Monitor;
 
 namespace EpMon
 {
     public class EndpointMonitor
     {
         private readonly ILogger _logger;
-        private readonly HttpClientFactory _httpClientFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly EndpointService _service;
+        private readonly ITokenService _tokenService;
 
         private Model.Endpoint _endpoint;
 
-        public EndpointMonitor(HttpClientFactory httpClientFactory, EndpointService service, ILogger<EndpointMonitor> logger)
+        public EndpointMonitor(IHttpClientFactory httpClientFactory, EndpointService service, ILogger<EndpointMonitor> logger, ITokenService tokenService)
         {
             _httpClientFactory = httpClientFactory;
+            _tokenService = tokenService;
             _service = service;
             _logger = logger;
         }
@@ -38,7 +43,8 @@ namespace EpMon
             }
             catch (Exception e)
             { 
-                _logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url}.", e.Message);
+                
+                _logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url} :: {e.Message}");
             }
         }
 
@@ -105,7 +111,7 @@ namespace EpMon
         {
             var result = new HealthReport();
 
-            var monitor = new HttpMonitor(_endpoint.Id.ToString(), _httpClientFactory);
+            var monitor = new HttpMonitor(_endpoint.Id.ToString(), _httpClientFactory, _tokenService);
             var sw = Stopwatch.StartNew();
             var info = monitor.CheckHealth(_endpoint.Url);
             result.TimeStamp = DateTime.UtcNow;

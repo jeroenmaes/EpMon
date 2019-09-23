@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading;
 using EpMon.Data;
 using EpMon;
+using EpMon.Infrastructure;
 using FluentScheduler;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,6 +50,7 @@ namespace EpMon.ConsoleHost
             collection.AddLogging(configure => configure.AddLog4Net());
             
             collection.AddSingleton<HttpClientFactory, HttpClientFactory>();
+            collection.AddTransient<ITokenService, CachedTokenService>();
             collection.AddTransient<EndpointMonitor, EndpointMonitor>();
             collection.AddTransient<EndpointStore, EndpointStore>();
             collection.AddTransient<EndpointService, EndpointService>();

@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading;
 using EpMon.Data;
 using EpMon;
+using EpMon.Infrastructure;
 using FluentScheduler;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -49,7 +50,8 @@ namespace EpMon.Web.Core
                 options.AutomaticAuthentication = false;
             });
 
-            services.AddSingleton<HttpClientFactory, HttpClientFactory>();
+            services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
+            services.AddSingleton<ITokenService, CachedTokenService>();
             services.AddTransient<EndpointMonitor, EndpointMonitor>();
             services.AddTransient<EndpointStore, EndpointStore>();
             services.AddTransient<EndpointService, EndpointService>();
@@ -79,10 +81,11 @@ namespace EpMon.Web.Core
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
+            string virtualDirectory = Configuration.GetSection("EpMon:SwaggerVirtualPath").Value;
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "EpMon API V1");
+                c.SwaggerEndpoint($"{virtualDirectory}/swagger/v1/swagger.json", "EpMon API V1");
             });
 
             

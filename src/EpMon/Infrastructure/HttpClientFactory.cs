@@ -3,9 +3,14 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
 
-namespace EpMon
+namespace EpMon.Infrastructure
 {
-    public sealed class HttpClientFactory : IDisposable // Register as singleton
+    public interface  IHttpClientFactory
+    {
+        HttpClient Create(Uri baseAddress);
+    }
+
+    public sealed class HttpClientFactory : IDisposable, IHttpClientFactory // Register as singleton
     {
         private readonly ConcurrentDictionary<Uri, HttpClient> _httpClients;
 

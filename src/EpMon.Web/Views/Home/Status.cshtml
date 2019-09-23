@@ -6,36 +6,40 @@
 @using System.Globalization;
 
 
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="mb-2">Status</h2>
-    </div>
-</div>
-
-<div class="row">
+<div class="col-md-12">
     @foreach (var tag in Model.EndpointsByTag)
     {
-
-    @foreach (var endpoint in tag.Value)
-    {
-        var lastStat = endpoint.Stats?.FirstOrDefault();
-
-        <div class="col-sm-4 col-md-3">
-
-            <div class="card text-white bg-success mb-3">
-                <div class="card-header">@Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)<span class="sr-only"> (OK)</span></div>
-                <div class="card-body">
-                    <p class="card-text">
-                        Last online: @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
-                        Last checked: @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
-                        Latency: @tag.Key
-                        Tag: @tag.Key
-                    </p>
-                </div>
-            </div>
-
+        <div class="row">
+            <h3>@tag.Key <small class="text-muted" style="">(@tag.Value.Count)</small></h3>
         </div>
-        }
+        <div class="row">
+            @foreach (var endpoint in tag.Value)
+            {
+                var lastStat = endpoint.Stats?.FirstOrDefault();
+
+                <div class="col-sm-4 col-md-3">
+                    
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-header">@Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)</div>
+                        <div class="card-body collapse">
+                            <p class="card-text">
+                                Last online: @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
+                            </p>
+                            <p class="card-text">
+                                Last checked: @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
+                            </p>
+                            <p class="card-text">
+                                Latency: @tag.Key
+                            </p>
+                            <p class="card-text">
+                                Tag: @tag.Key
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
 
     }
 

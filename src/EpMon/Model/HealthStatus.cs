@@ -1,4 +1,4 @@
-﻿namespace EpMon
+﻿namespace EpMon.Model
 {
     public enum HealthStatus
     {

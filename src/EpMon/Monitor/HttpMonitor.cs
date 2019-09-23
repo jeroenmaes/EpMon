@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
+using EpMon.Helpers;
+using EpMon.Infrastructure;
+using EpMon.Model;
+using IdentityModel.Client;
 
-namespace EpMon
+namespace EpMon.Monitor
 {
     public class HttpMonitor : IHealthMonitor
     {
-        public HttpClientFactory HttpClientFactory;
+        public IHttpClientFactory HttpClientFactory;
+        public ITokenService TokenService;
 
         public HttpMonitor() : this("http")
         {
@@ -20,18 +24,20 @@ namespace EpMon
             HttpClientFactory = new HttpClientFactory();
         }
 
-        public HttpMonitor(string name, HttpClientFactory httpClientFactory)
+        public HttpMonitor(string name, IHttpClientFactory httpClientFactory, ITokenService tokenService)
         {
             Name = name;
             HttpClientFactory = httpClientFactory;
+            TokenService = tokenService;
         }
 
         public string Name { get; }
-
+        
         public HealthInfo CheckHealth(string address)
         {
             var baseUri = UriHelper.GetBaseUri(address);
             var httpClient = HttpClientFactory.Create(new Uri(baseUri));
+            httpClient.SetBearerToken(TokenService.GetToken());
 
             var response = AsyncHelper.RunSync(() => httpClient.GetAsync(address));
 

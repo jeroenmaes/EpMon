@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace EpMon.Data.Entities
 {
-    public class Endpoint
+    public class Endpoint : IEntity, ITrackableEntity
     {
         public int Id { get; set; }
         public int CheckInterval { get; set; }
@@ -16,6 +17,8 @@ namespace EpMon.Data.Entities
         public bool IsCritical { get; set; }
 
         public ICollection<EndpointStat> Stats { get; set; }
+        public DateTime CreatedDateTime { get; set; }
+        public DateTime ModifiedDateTime { get; set; }
     }
 
     public enum CheckType

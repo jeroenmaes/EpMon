@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EpMon
+namespace EpMon.Helpers
 {
     public static class UriHelper
     {

@@ -3,7 +3,7 @@ using System.Net;
 
 namespace EpMon.Data.Entities
 {
-    public class EndpointStat
+    public class EndpointStat : IEntity
     {
         public int Id { get; set; }
 

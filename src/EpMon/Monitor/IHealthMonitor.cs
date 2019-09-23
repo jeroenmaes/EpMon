@@ -1,4 +1,6 @@
-﻿namespace EpMon
+﻿using EpMon.Model;
+
+namespace EpMon.Monitor
 {
     public interface IHealthMonitor
     {

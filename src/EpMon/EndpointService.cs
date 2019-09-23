@@ -13,6 +13,9 @@ namespace EpMon
     {
         private readonly EndpointStore _store;
 
+        private readonly GenericRepository<EpMon.Data.Entities.Endpoint> _endpointRepository;
+        private readonly GenericRepository<EpMon.Data.Entities.EndpointStat> _endpointStatRepository;
+
         public EndpointService(EndpointStore store)
         {
             _store = store;

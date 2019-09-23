@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace EpMon
+namespace EpMon.Model
 {
     public class HealthReport
     {

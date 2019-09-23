@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using EpMon.Model;
+using EpMon.Monitor;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EpMon.Tests
 {
