@@ -40,11 +40,14 @@ namespace EpMon
                 ConsoleLog(healthReport);
 
                 _service.SaveHealthReport(_endpoint.Id, healthReport);
+                
+                _service.PublishHealthReport(_endpoint, healthReport);
+                
             }
             catch (Exception e)
             { 
                 
-                _logger.LogError($"Error while executing MonitorJob for endpoint {endpoint.Url} :: {e.Message}");
+                _logger.LogError(e,$"Error while executing MonitorJob for endpoint {endpoint.Url} :: {e.Message}");
             }
         }
 

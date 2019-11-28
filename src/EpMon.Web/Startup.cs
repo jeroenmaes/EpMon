@@ -2,17 +2,16 @@
 using System.Net;
 using System.Threading;
 using EpMon.Data;
-using EpMon;
 using EpMon.Infrastructure;
 using FluentScheduler;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Prometheus;
 
 
 namespace EpMon.Web.Core
@@ -20,6 +19,8 @@ namespace EpMon.Web.Core
 
     public class Startup
     {
+        private static MetricPusher _metricPusher;
+
         public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -36,6 +37,7 @@ namespace EpMon.Web.Core
         private void OnShutdown()
         {
             JobManager.StopAndBlock();
+            _metricPusher.Stop();
         }
 
         public IConfiguration Configuration { get; }
@@ -55,7 +57,7 @@ namespace EpMon.Web.Core
             services.AddTransient<EndpointMonitor, EndpointMonitor>();
             services.AddTransient<EndpointStore, EndpointStore>();
             services.AddTransient<EndpointService, EndpointService>();
-
+            
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
             services.AddSwaggerGen(c =>
@@ -88,7 +90,11 @@ namespace EpMon.Web.Core
                 c.SwaggerEndpoint($"{virtualDirectory}/swagger/v1/swagger.json", "EpMon API V1");
             });
 
-            
+            Metrics.SuppressDefaultMetrics();
+            var prometheusEndpoint = Configuration.GetSection("EpMon:PrometheusPushGateway").Value;
+            _metricPusher = new MetricPusher(prometheusEndpoint, $"EpMon", Environment.MachineName);
+            _metricPusher.Start();
+
             JobManager.UseUtcTime();
             JobManager.Initialize(new MonitorOrchestrator(app.ApplicationServices));
             JobManager.Initialize(new CleanupOrchestrator(app.ApplicationServices));

@@ -43,6 +43,7 @@
   <ItemGroup>
     <PackageReference Include="FluentScheduler" Version="5.3.0" />
     <PackageReference Include="IdentityModel" Version="4.0.0" />
+    <PackageReference Include="prometheus-net" Version="3.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EpMon.Data\EpMon.Data.csproj" />
