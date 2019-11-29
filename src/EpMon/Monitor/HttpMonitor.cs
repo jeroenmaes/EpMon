@@ -35,20 +35,33 @@ namespace EpMon.Monitor
         
         public HealthInfo CheckHealth(string address)
         {
-            var baseUri = UriHelper.GetBaseUri(address);
-            var httpClient = HttpClientFactory.Create(new Uri(baseUri));
-            httpClient.SetBearerToken(TokenService.GetToken());
+            try
+            {
+                var baseUri = UriHelper.GetBaseUri(address);
+                var httpClient = HttpClientFactory.Create(new Uri(baseUri));
+                httpClient.SetBearerToken(TokenService.GetToken());
 
-            var response = AsyncHelper.RunSync(() => httpClient.GetAsync(address));
+                var response = AsyncHelper.RunSync(() => httpClient.GetAsync(address));
 
-            if (response.StatusCode == HttpStatusCode.NotFound)
-                return new HealthInfo(HealthStatus.NotExists);
-            if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
-                return new HealthInfo(HealthStatus.Offline);
-            if (response.IsSuccessStatusCode)
-                return new HealthInfo(HealthStatus.Healthy, ReadContent(response));
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                    return new HealthInfo(HealthStatus.NotExists);
+                if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    return new HealthInfo(HealthStatus.Offline);
+                if (response.IsSuccessStatusCode)
+                    return new HealthInfo(HealthStatus.Healthy, ReadContent(response));
 
-            return new HealthInfo(HealthStatus.Faulty, ReadContent(response));
+                return new HealthInfo(HealthStatus.Faulty, ReadContent(response));
+            }
+            catch (Exception e)
+            {
+                var content = new Dictionary<string, string>
+                {
+                    {"code","500"},
+                    {"content", e.Message}
+                };
+
+                return new HealthInfo(HealthStatus.Faulty, content);
+            }
         }
 
         private IReadOnlyDictionary<string, string> ReadContent(HttpResponseMessage response)
