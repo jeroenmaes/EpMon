@@ -40,9 +40,11 @@ namespace EpMon
                 ConsoleLog(healthReport);
 
                 _service.SaveHealthReport(_endpoint.Id, healthReport);
-                
-                _service.PublishHealthReport(_endpoint, healthReport);
-                
+
+                if (endpoint.PublishStats)
+                {
+                    _service.PublishHealthReport(_endpoint, healthReport);
+                }
             }
             catch (Exception e)
             { 

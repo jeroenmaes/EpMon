@@ -67,7 +67,7 @@ namespace EpMon.Web.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
         {
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
@@ -92,8 +92,11 @@ namespace EpMon.Web.Core
 
             Metrics.SuppressDefaultMetrics();
             var prometheusEndpoint = Configuration.GetSection("EpMon:PrometheusPushGateway").Value;
-            _metricPusher = new MetricPusher(prometheusEndpoint, $"EpMon", Environment.MachineName);
-            _metricPusher.Start();
+            if (!string.IsNullOrEmpty(prometheusEndpoint))
+            {
+                _metricPusher = new MetricPusher(prometheusEndpoint, $"EpMon", Environment.MachineName);
+                _metricPusher.Start();
+            }
 
             JobManager.UseUtcTime();
             JobManager.Initialize(new MonitorOrchestrator(app.ApplicationServices));
@@ -104,12 +107,19 @@ namespace EpMon.Web.Core
 
         private void MigrateDatabase(IServiceProvider services)
         {
-            using (var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            try
             {
-                using (var context = serviceScope.ServiceProvider.GetService<EpMonContext>())
-                {
-                    context.Database.Migrate();
-                }
+                Console.WriteLine("Run Database migration...");
+                
+                using var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+                using var context = serviceScope.ServiceProvider.GetService<EpMonContext>();
+                context.Database.Migrate();
+
+                Console.WriteLine("Database migrated.");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
     }

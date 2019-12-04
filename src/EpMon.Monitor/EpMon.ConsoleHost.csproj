@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -30,17 +30,17 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentScheduler" Version="5.3.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0">
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="3.0.3" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>

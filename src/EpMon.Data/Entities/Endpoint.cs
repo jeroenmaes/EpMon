@@ -15,6 +15,7 @@ namespace EpMon.Data.Entities
         public bool IsActive { get; set; }
 
         public bool IsCritical { get; set; }
+        public bool PublishStats { get; set; }
 
         public ICollection<EndpointStat> Stats { get; set; }
         public DateTime CreatedDateTime { get; set; }

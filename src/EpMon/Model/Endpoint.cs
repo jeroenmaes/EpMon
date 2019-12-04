@@ -14,5 +14,7 @@ namespace EpMon.Model
         public bool IsActive { get; set; }
 
         public bool IsCritical { get; set; }
+
+        public bool PublishStats { get; set; }
     }
 }

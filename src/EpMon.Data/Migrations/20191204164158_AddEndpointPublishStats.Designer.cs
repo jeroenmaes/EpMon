@@ -4,14 +4,16 @@ using EpMon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EpMon.Data.Migrations
 {
     [DbContext(typeof(EpMonContext))]
-    partial class EpMonContextModelSnapshot : ModelSnapshot
+    [Migration("20191204164158_AddEndpointPublishStats")]
+    partial class AddEndpointPublishStats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
