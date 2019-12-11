@@ -23,7 +23,7 @@ namespace EpMon
 
         public IEnumerable<Model.Endpoint> GetAllActiveEndpoints()
         {
-            return _store.GetAllEndpoints().Where(x => x.IsActive).Select(x => new Model.Endpoint { Name = x.Name, Id = x.Id, Url = x.Url, IsActive = x.IsActive, CheckInterval = x.CheckInterval, CheckType = (int)x.CheckType, Tags = x.Tags, IsCritical = x.IsCritical });
+            return _store.GetAllEndpoints().Where(x => x.IsActive).Select(x => new Model.Endpoint { Name = x.Name, Id = x.Id, Url = x.Url, IsActive = x.IsActive, CheckInterval = x.CheckInterval, CheckType = (int)x.CheckType, Tags = x.Tags, IsCritical = x.IsCritical, PublishStats = x.PublishStats});
         }
 
         public void SaveHealthReport(int endpointId, HealthReport report)

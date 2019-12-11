@@ -1,4 +1,4 @@
-namespace EpMon.Web.Core.Models
+namespace EpMon.Web.Models
 {
     public class ErrorViewModel
     {

@@ -7,16 +7,8 @@ namespace EpMon.Web.Models
     {
         public List<string> Tags { set; get; }
     }
-
-    public class EndpointsOverview
-    {
-        
-        public Dictionary<string, List<Endpoint>> EndpointsByTag { set; get; }
-        
-        public bool UnHealthyEndpoints { get; set; }
-    }
     
-    public class EndpointsOverview2
+    public class EndpointsOverview
     {
        public List<Endpoint> Endpoints { get; set; }
         

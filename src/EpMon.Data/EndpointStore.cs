@@ -62,7 +62,7 @@ namespace EpMon.Data
             return await _context.Endpoints.AsNoTracking().Select(x => x.Tags).Distinct().ToListAsync();
         }
 
-        public async Task<IEnumerable<Endpoint>> GetAllEndpointsAsync2(string tagFilter)
+        public async Task<IEnumerable<Endpoint>> GetAllEndpointsAsync(string tagFilter)
         {
             IEnumerable<Endpoint> endpoints;
             List<Endpoint> returnValues = new List<Endpoint>();
@@ -109,6 +109,7 @@ namespace EpMon.Data
             endpointEntity.IsActive = endpoint.IsActive;
             endpointEntity.IsCritical = endpoint.IsCritical;
             endpointEntity.Tags = endpointEntity.Tags;
+            endpointEntity.PublishStats = endpointEntity.PublishStats;
 
             await _context.SaveChangesAsync();
         }

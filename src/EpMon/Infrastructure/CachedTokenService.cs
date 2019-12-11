@@ -41,6 +41,11 @@ namespace EpMon.Infrastructure
 
         public string GetToken(bool forceFreshToken = false)
         {
+            if (!IsTokenSecurityConfigured())
+            {
+                return string.Empty;
+            }
+
             lock (_lockObject)
             {
                 if (forceFreshToken || !IsValidToken())
@@ -49,6 +54,11 @@ namespace EpMon.Infrastructure
                 }
                 return _cachedToken;
             }
+        }
+
+        private bool IsTokenSecurityConfigured()
+        {
+            return !string.IsNullOrEmpty(_tokenService);
         }
 
         private bool IsValidToken()
@@ -71,7 +81,7 @@ namespace EpMon.Infrastructure
             if (tokenResponse == null || tokenResponse.IsError)
             {
                 _cachedTokenExpiration = DateTime.MinValue;
-                _cachedToken = "";
+                _cachedToken = string.Empty;
 
                 _logger.LogError($"Error requesting token : ({tokenResponse?.ErrorDescription} - {tokenResponse?.HttpErrorReason})");
             }

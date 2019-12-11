@@ -9,38 +9,23 @@
 
 <div class="row">
     <div class="col-md-12">
-        @*<h2 class="mb-2">Endpoints <small class="text-muted" style="">(@Model.Tags.Count)</small></h2>*@
-        @{
-            @*if (@Model.UnHealthyEndpoints)
-            {
-                <div class="alert alert-warning" role="alert">
-                    <div class="panel-heading">
-                        <h5 class="panel-title">
-                            Not all critical endpoints are healthy
-                            <small class="float-right">Refreshes every minute</small>
-                        </h5>
-                    </div>
-                </div>
-            }*@
-        }
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
         @foreach (var tag in Model.Tags)
         {
             var stage = tag;
-            //var endpoints = tag.Value;
-
-            //await Html.RenderPartialAsync("EndpointOverview", new EndpointsOverview2 { TagName = stage, Endpoints = endpoints });
 
             <div id="@stage">Loading '@tag' endpoints...</div>
 
             <script type="text/javascript">
                 var rootDir = "@Url.Content("~/")";
-                function loadEndpointData(tagName){
+
+                function loadEndpointData(tagName) {
                     $.ajax({
                         type: "GET",
-                        url: rootDir + 'Home/Endpoints2?tagName=' + tagName,
-                        success: function (result) {
+                        url: rootDir + 'Home/EndpointsPartial?tagName=' + tagName,
+                        success: function(result) {
                             $('#' + tagName).html(result);
                         }
                     });
@@ -48,9 +33,10 @@
 
                 loadEndpointData('@stage')
 
-                setInterval(function(){
+                setInterval(function() {
                     loadEndpointData('@stage') // this will run after every 60 seconds
-                }, 60000);
+                    },
+                    60000);
 
             </script>
         }

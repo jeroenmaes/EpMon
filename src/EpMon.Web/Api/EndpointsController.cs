@@ -3,12 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using EpMon.Data;
 using EpMon.Data.Entities;
-using EpMon.Web.Api;
 using EpMon.Web.ApiModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace EpMon.Web.Core.Controllers
+namespace EpMon.Web.Api
 {
     public class EndpointsController : BaseApiController
     {
@@ -47,6 +46,7 @@ namespace EpMon.Web.Core.Controllers
             endpoint.CheckType = (CheckType)endpointDto.CheckType;
             endpoint.IsActive = endpointDto.IsActive;
             endpoint.IsCritical = endpointDto.IsCritical;
+            endpoint.PublishStats = endpointDto.PublishStats;
 
             await _store.UpdateEndpointAsync(endpoint);
         }
@@ -54,7 +54,7 @@ namespace EpMon.Web.Core.Controllers
         [HttpGet("/endpoints")]
         public async Task<IEnumerable<EndpointDto>> GetEndpoints()
         {
-            return (await _store.GetAllEndpointsAsync2("")).Select(x => new EndpointDto { Name  = x.Name, CheckInterval = x.CheckInterval, CheckType = x.CheckInterval, IsActive = x.IsActive, Tags = x.Tags, IsCritical = x.IsCritical, Url = x.Url, Id = x.Id});
+            return (await _store.GetAllEndpointsAsync("")).Select(x => new EndpointDto { Name  = x.Name, CheckInterval = x.CheckInterval, CheckType = x.CheckInterval, IsActive = x.IsActive, Tags = x.Tags, IsCritical = x.IsCritical, Url = x.Url, Id = x.Id});
         }
 
         [HttpDelete("/endpoints/{id}")]

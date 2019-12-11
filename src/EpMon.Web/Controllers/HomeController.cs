@@ -1,14 +1,14 @@
-﻿using EpMon.Data;
-using EpMon.Web.Models;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EpMon.Data;
+using EpMon.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
-namespace EpMon.Web.Core.Controllers
+namespace EpMon.Web.Controllers
 {
     public class HomeController : Controller
     {
@@ -27,25 +27,13 @@ namespace EpMon.Web.Core.Controllers
            
             return View(new EndpointTags { Tags = tags.ToList() });
         }
-
-        public async Task<ActionResult> Status(string tagName = "")
-        {
-            var endpoints = await _store.GetAllEndpointsAsync2(tagName);
-            var endpointsByTag = endpoints?.GroupBy(x => x.Tags).ToDictionary(y => y.Key, y => y.ToList());
-            var unHealthyEndpoints = endpoints?.Where(y => y.IsCritical).Count(x => x.Stats?.FirstOrDefault().IsHealthy == false) > 0;
-
-            Response.Headers.Add("Refresh", TimeSpan.FromMinutes(1).TotalSeconds.ToString());
-
-            return View(new EndpointsOverview { EndpointsByTag = endpointsByTag, UnHealthyEndpoints = unHealthyEndpoints });
-        }
-
+        
         [HttpGet]
-        public async Task<ActionResult> Endpoints2(string tagName = "")
+        public async Task<ActionResult> EndpointsPartial(string tagName = "")
         {
-            var endpoints = await _store.GetAllEndpointsAsync2(tagName);
+            var endpoints = await _store.GetAllEndpointsAsync(tagName);
                        
-            return PartialView("EndpointOverview", new EndpointsOverview2 { TagName = tagName, Endpoints = endpoints.ToList() });
-
+            return PartialView("EndpointOverview", new EndpointsOverview { TagName = tagName, Endpoints = endpoints.ToList() });
         }
 
         public async Task<ActionResult> EndpointStats(int? id, int? page, string start = "", string end = "")

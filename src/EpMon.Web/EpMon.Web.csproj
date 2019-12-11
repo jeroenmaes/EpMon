@@ -7,6 +7,10 @@
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <ApplicationInsightsResourceId>/subscriptions/99d98842-25c6-4697-a2f2-a8bc98a91fe8/resourcegroups/EpMon/providers/microsoft.insights/components/epmon</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/99d98842-25c6-4697-a2f2-a8bc98a91fe8/resourcegroups/EpMon/providers/microsoft.insights/components/epmon</ApplicationInsightsAnnotationResourceId>
+    <UserSecretsId>af9f9f9d-7776-4509-a357-e97fda86cf7a</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
 
 
@@ -17,9 +21,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="3.0.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
     <PackageReference Include="prometheus-net" Version="3.3.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc4" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="7.9.1" />
   </ItemGroup>

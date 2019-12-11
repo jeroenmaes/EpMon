@@ -39,8 +39,13 @@ namespace EpMon.Monitor
             {
                 var baseUri = UriHelper.GetBaseUri(address);
                 var httpClient = HttpClientFactory.Create(new Uri(baseUri));
-                httpClient.SetBearerToken(TokenService.GetToken());
+                var token = TokenService.GetToken();
 
+                if (token != string.Empty)
+                {
+                    httpClient.SetBearerToken(token);
+                }
+                
                 var response = AsyncHelper.RunSync(() => httpClient.GetAsync(address));
 
                 if (response.StatusCode == HttpStatusCode.NotFound)
