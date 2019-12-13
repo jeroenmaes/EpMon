@@ -37,7 +37,9 @@ namespace EpMon.Web.Core
         private void OnShutdown()
         {
             JobManager.StopAndBlock();
-            _metricPusher.Stop();
+
+            if(_metricPusher != null)
+                _metricPusher.Stop();
         }
 
         public IConfiguration Configuration { get; }

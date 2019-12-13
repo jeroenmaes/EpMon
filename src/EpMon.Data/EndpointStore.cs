@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EpMon.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using X.PagedList;
 
 namespace EpMon.Data
 {
@@ -82,8 +81,7 @@ namespace EpMon.Data
                 var stat = await GetLastEndpointStatAsync(endpoint.Id);
                 if (stat != null)
                 {
-                    endpoint.Stats = new List<EndpointStat>();
-                    endpoint.Stats.Add(stat);
+                    endpoint.Stats = new List<EndpointStat> {stat};
                 }
 
                 returnValues.Add(endpoint);
@@ -113,22 +111,14 @@ namespace EpMon.Data
 
             await _context.SaveChangesAsync();
         }
-
-        public async Task<IEnumerable<EndpointStat>> GetEndpointStatsAsync(int endpointId, int maxHours)
+        
+        public IQueryable<EndpointStat> GetEndpointStatsAsync(int endpointId, int maxHours)
         {
-            return await _context.EndpointStats.AsNoTracking().Where(q => q.EndpointId == endpointId)
+            return _context.EndpointStats.AsNoTracking().Where(q => q.EndpointId == endpointId)
                 .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-maxHours))
-                .OrderByDescending(x => x.TimeStamp).ToListAsync();
+                .OrderByDescending(x => x.TimeStamp).AsQueryable();
         }
-
-        public async Task<IEnumerable<EndpointStat>> GetEndpointStatsAsync(int endpointId, int maxHours, int pageNumber, int pageSize)
-        {
-            return await _context.EndpointStats.AsNoTracking().Where(q => q.EndpointId == endpointId)
-                .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-maxHours))
-                .OrderByDescending(x => x.TimeStamp)
-                .ToPagedListAsync(pageNumber, pageSize);
-        }
-
+        
         public async Task<EndpointStat> GetLastEndpointStatAsync(int endpointId)
         {
             var stat = _context.EndpointStats.AsNoTracking().Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).Take(1).FirstOrDefaultAsync();

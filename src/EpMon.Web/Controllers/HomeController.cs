@@ -7,6 +7,7 @@ using EpMon.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using X.PagedList;
 
 namespace EpMon.Web.Controllers
 {
@@ -43,8 +44,8 @@ namespace EpMon.Web.Controllers
             var pageSize = 15;
             var maxHours = 24;
 
-            var stats = await _store.GetEndpointStatsAsync(id.Value, maxHours);
-            var pagedStats = await _store.GetEndpointStatsAsync(id.Value, maxHours, pageNumber, pageSize);
+            var stats = _store.GetEndpointStatsAsync(id.Value, maxHours);
+            var pagedStats = await _store.GetEndpointStatsAsync(id.Value, maxHours).ToPagedListAsync(pageNumber, pageSize);
 
             var endpoint = await _store.GetByEndpointIdAsync(id.Value);
             var lastStat = stats.FirstOrDefault();

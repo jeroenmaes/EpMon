@@ -71,13 +71,9 @@ namespace EpMon.ConsoleHost
 
         private static void MigrateDatabase(IServiceProvider services)
         {
-            using (var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                using (var context = serviceScope.ServiceProvider.GetService<EpMonContext>())
-                {
-                    context.Database.Migrate();
-                }
-            }
+            using var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            using var context = serviceScope.ServiceProvider.GetService<EpMonContext>();
+            context.Database.Migrate();
         }
     }
 }
