@@ -51,6 +51,7 @@
 
 
   <ItemGroup>
+    <Folder Include="Connected Services\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
 
