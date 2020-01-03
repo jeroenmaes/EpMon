@@ -4,8 +4,6 @@ VisualStudioVersion = 16.0.29209.152
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon", "src\EpMon\EpMon.csproj", "{D0F1A0C8-7B7D-4119-9281-532394657896}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.ConsoleHost", "src\EpMon.Monitor\EpMon.ConsoleHost.csproj", "{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Data", "src\EpMon.Data\EpMon.Data.csproj", "{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpMon.Tests", "src\EpMon.Tests\EpMon.Tests.csproj", "{9AE5D942-73FB-45FA-8D12-2F542FCDD09C}"
@@ -22,10 +20,6 @@ Global
 		{D0F1A0C8-7B7D-4119-9281-532394657896}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0F1A0C8-7B7D-4119-9281-532394657896}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0F1A0C8-7B7D-4119-9281-532394657896}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E056A233-D93C-4F47-B4AD-9408F0D5F0FC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BEEDF3E-4386-4478-930C-4154C6A5FAFE}.Release|Any CPU.ActiveCfg = Release|Any CPU

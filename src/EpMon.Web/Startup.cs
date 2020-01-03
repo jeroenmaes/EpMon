@@ -3,7 +3,8 @@ using System.Net;
 using System.Threading;
 using EpMon.Data;
 using EpMon.Infrastructure;
-using FluentScheduler;
+using EpMon.Web.Extensions;
+using EpMon.Web.Jobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -33,15 +34,7 @@ namespace EpMon.Web.Core
             ServicePointManager.DefaultConnectionLimit = 1000;
             ThreadPool.SetMinThreads(100, 100);
         }
-
-        private void OnShutdown()
-        {
-            JobManager.StopAndBlock();
-
-            if(_metricPusher != null)
-                _metricPusher.Stop();
-        }
-
+        
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -53,6 +46,8 @@ namespace EpMon.Web.Core
             {
                 options.AutomaticAuthentication = false;
             });
+
+            services.AddStartupJob<MigrateDatabaseJob>();
 
             services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
             services.AddSingleton<ITokenService, CachedTokenService>();
@@ -66,6 +61,8 @@ namespace EpMon.Web.Core
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "EpMon API", Version = "v1" });
             });
+
+            services.AddScheduledJobs();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,9 +72,7 @@ namespace EpMon.Web.Core
             app.UseStaticFiles();
            
             loggerFactory.AddLog4Net();
-
-            MigrateDatabase(app.ApplicationServices);
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -98,31 +93,7 @@ namespace EpMon.Web.Core
             {
                 _metricPusher = new MetricPusher(prometheusEndpoint, $"EpMon", Environment.MachineName);
                 _metricPusher.Start();
-            }
-
-            JobManager.UseUtcTime();
-            JobManager.Initialize(new MonitorOrchestrator(app.ApplicationServices));
-            JobManager.Initialize(new CleanupOrchestrator(app.ApplicationServices));
-
-            applicationLifetime.ApplicationStopping.Register(OnShutdown);
-        }
-
-        private void MigrateDatabase(IServiceProvider services)
-        {
-            try
-            {
-                Console.WriteLine("Run Database migration...");
-                
-                using var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-                using var context = serviceScope.ServiceProvider.GetService<EpMonContext>();
-                context.Database.Migrate();
-
-                Console.WriteLine("Database migrated.");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            }            
         }
     }
 }
