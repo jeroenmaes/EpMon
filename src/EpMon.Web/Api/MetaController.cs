@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using EpMon.Web.ApiModels;
-using EpMon.Web.Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EpMon.Web.Api

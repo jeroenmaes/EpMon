@@ -17,13 +17,13 @@ namespace EpMon.Web.Jobs
             _context = context;
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             try
             {
                 Console.WriteLine("Run Database migration...");
 
-                _context.Database.Migrate();
+                await _context.Database.MigrateAsync(cancellationToken);
 
                 Console.WriteLine("Database migrated.");
             }
@@ -31,8 +31,6 @@ namespace EpMon.Web.Jobs
             {
                 Console.WriteLine(e);
             }
-
-            await Task.CompletedTask;
         }
     }
 }

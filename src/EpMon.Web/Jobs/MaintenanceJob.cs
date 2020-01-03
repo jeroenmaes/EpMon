@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EpMon.Web.Jobs
 {
@@ -14,11 +15,11 @@ namespace EpMon.Web.Jobs
         public string CronTimeZone { get; set; }
         public bool RunImmediately { get; set; }
 
-        private readonly EndpointStore _endpointStore;
+        private readonly IServiceProvider _provider;
 
-        public MaintenanceJob(EndpointStore endpointStore)
+        public MaintenanceJob(IServiceProvider provider)
         {
-            _endpointStore = endpointStore;
+            _provider = provider;
             ConfigureJob();
         }
 
@@ -30,7 +31,11 @@ namespace EpMon.Web.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _endpointStore.RemoveEndpointStatsByDaysToKeep(30);
+            using (var scope = _provider.CreateScope())
+            {
+                var endpointStore = scope.ServiceProvider.GetService<EndpointStore>();
+                endpointStore.RemoveEndpointStatsByDaysToKeep(30);
+            }
 
             await Task.CompletedTask;
         }

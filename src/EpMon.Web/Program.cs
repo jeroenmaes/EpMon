@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace EpMon.Web.Core
+namespace EpMon.Web
 {
     public class Program
     {

@@ -21,14 +21,14 @@ namespace EpMon.Web.Extensions
             {
                 services.AddScheduler(builder =>
                 {
-                    builder.AddJob(serviceProvider => new EndpointJob(endpoint, serviceProvider.GetService<EndpointMonitor>()));
+                    builder.AddJob(provider => new EndpointJob(provider, endpoint));
                     builder.UnobservedTaskExceptionHandler = (sender, exceptionEventArgs) => UnobservedJobHandlerHandler(sender, exceptionEventArgs, services);
                 });
             }
 
             services.AddScheduler(builder =>
             {
-                builder.AddJob(serviceProvider => new MaintenanceJob(serviceProvider.GetService<EndpointStore>()));
+                builder.AddJob(provider => new MaintenanceJob(provider));
                 builder.UnobservedTaskExceptionHandler = (sender, exceptionEventArgs) => UnobservedJobHandlerHandler(sender, exceptionEventArgs, services);
             });
 
@@ -40,6 +40,8 @@ namespace EpMon.Web.Extensions
             var logger = services.FirstOrDefault(service => service.ServiceType == typeof(ILogger));
             var loggerInstance = (ILogger)logger?.ImplementationInstance;
             loggerInstance?.LogCritical(e.Exception, "Unhandled job exception");
+
+            Console.WriteLine("ERROR: " + e.Exception);
 
             e.SetObserved();
         }

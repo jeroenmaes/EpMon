@@ -7,7 +7,6 @@ using EpMon.Web.Extensions;
 using EpMon.Web.Jobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,7 +14,7 @@ using Microsoft.Extensions.Logging;
 using Prometheus;
 
 
-namespace EpMon.Web.Core
+namespace EpMon.Web
 {
 
     public class Startup
@@ -40,7 +39,7 @@ namespace EpMon.Web.Core
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<EpMonContext>(ServiceLifetime.Transient, ServiceLifetime.Transient);
+            services.AddDbContext<EpMonContext>();
             
             services.Configure<IISServerOptions>(options =>
             {
@@ -66,7 +65,7 @@ namespace EpMon.Web.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
@@ -80,13 +79,8 @@ namespace EpMon.Web.Core
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            string virtualDirectory = Configuration.GetSection("EpMon:SwaggerVirtualPath").Value;
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint($"{virtualDirectory}/swagger/v1/swagger.json", "EpMon API V1");
-            });
-
+            app.UseOpenApiUi(Configuration);
+            
             Metrics.SuppressDefaultMetrics();
             var prometheusEndpoint = Configuration.GetSection("EpMon:PrometheusPushGateway").Value;
             if (!string.IsNullOrEmpty(prometheusEndpoint))

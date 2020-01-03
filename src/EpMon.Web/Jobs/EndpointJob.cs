@@ -4,17 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EpMon.Web.Jobs
 {
     public class EndpointJob : IScheduledJob
     {
         private readonly Model.Endpoint _endpoint;
-        private readonly EndpointMonitor _endpointMonitor;
-        public EndpointJob(Model.Endpoint endpoint, EndpointMonitor endpointMonitor)
+        
+        private readonly IServiceProvider _provider;
+
+        public EndpointJob(IServiceProvider provider, Model.Endpoint endpoint)
         {
+            _provider = provider;
             _endpoint = endpoint;
-            _endpointMonitor = endpointMonitor;
 
             ConfigureJob();
         }
@@ -31,9 +34,14 @@ namespace EpMon.Web.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _endpointMonitor.CheckHealth(_endpoint);
+            using (var scope = _provider.CreateScope())
+            {
+                var endpointMonitor = scope.ServiceProvider.GetService<EndpointMonitor>();
+                endpointMonitor.CheckHealth(_endpoint);
+            }
 
             await Task.CompletedTask;
+
         }
     }
 }
