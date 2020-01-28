@@ -136,7 +136,7 @@ namespace EpMon
                 {
                     if (info.Details["contentType"].Contains("html"))
                     {
-                        result.Message = string.Empty;
+                        result.Message = "Unexpected html content";
                     }
                 }
             }

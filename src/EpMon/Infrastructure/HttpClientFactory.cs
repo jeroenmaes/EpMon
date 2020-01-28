@@ -24,7 +24,7 @@ namespace EpMon.Infrastructure
             foreach (var httpClient in _httpClients.Values) httpClient.Dispose();
         }
 
-        private HttpClient Create(Uri baseAddress, HttpClientHandler handler)
+        private HttpClient Create(Uri baseAddress, HttpMessageHandler handler)
         {
             //http://byterot.blogspot.com/2016/07/singleton-httpclient-dns.html
             var sp = ServicePointManager.FindServicePoint(baseAddress);
@@ -32,7 +32,18 @@ namespace EpMon.Infrastructure
                 sp.ConnectionLeaseTimeout = 60 * 1000; // 1 minute
 
             return _httpClients.GetOrAdd(baseAddress,
-                b => new HttpClient(handler) {BaseAddress = b});
+                b => CreateHttpClient(handler, b));
+        }
+
+        private static HttpClient CreateHttpClient(HttpMessageHandler handler, Uri b)
+        {
+            var client = new HttpClient(handler)
+            {
+                BaseAddress = b, 
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            return client;
         }
 
         public HttpClient Create(Uri baseAddress)
