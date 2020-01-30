@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading;
-using EpMon.Data;
+﻿using EpMon.Data;
 using EpMon.Infrastructure;
 using EpMon.Web.Extensions;
 using EpMon.Web.Jobs;
@@ -9,9 +6,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Prometheus;
+using System;
+using System.Net;
+using System.Threading;
 
 
 namespace EpMon.Web
@@ -48,7 +47,7 @@ namespace EpMon.Web
 
             services.AddStartupJob<MigrateDatabaseJob>();
 
-            services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
+            services.AddHttpClient();
             services.AddSingleton<ITokenService, CachedTokenService>();
             services.AddTransient<EndpointMonitor, EndpointMonitor>();
             services.AddTransient<EndpointStore, EndpointStore>();

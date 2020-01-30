@@ -21,7 +21,7 @@ namespace EpMon.Monitor
         public HttpMonitor(string name)
         {
             Name = name;
-            HttpClientFactory = new HttpClientFactory();
+        
         }
 
         public HttpMonitor(string name, IHttpClientFactory httpClientFactory, ITokenService tokenService)
@@ -38,7 +38,10 @@ namespace EpMon.Monitor
             try
             {
                 var baseUri = UriHelper.GetBaseUri(address);
-                var httpClient = HttpClientFactory.Create(new Uri(baseUri));
+                
+                var httpClient = HttpClientFactory.CreateClient(baseUri);
+                httpClient.Timeout = TimeSpan.FromSeconds(30);
+
                 var token = TokenService.GetToken();
 
                 if (token != string.Empty)

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using EpMon.Helpers;
+﻿using EpMon.Helpers;
 using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Net.Http;
 
 namespace EpMon.Infrastructure
 {
@@ -68,7 +67,7 @@ namespace EpMon.Infrastructure
 
         private void RefreshToken()
         {
-            var client = _httpClientFactory.Create(new Uri(UriHelper.GetBaseUri(_tokenService)));
+            var client = _httpClientFactory.CreateClient(UriHelper.GetBaseUri(_tokenService));
 
             var tokenResponse = AsyncHelper.RunSync(() => client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
