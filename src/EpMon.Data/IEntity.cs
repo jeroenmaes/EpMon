@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EpMon.Data
+﻿namespace EpMon.Data
 {
     public interface IEntity
     {

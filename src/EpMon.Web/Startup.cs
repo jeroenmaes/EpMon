@@ -12,6 +12,7 @@ using System;
 using System.Net;
 using System.Threading;
 using EpMon.Publisher;
+using Microsoft.Extensions.Hosting;
 
 
 namespace EpMon.Web
@@ -19,7 +20,7 @@ namespace EpMon.Web
 
     public class Startup
     {
-        private static MetricPusher _metricPusher;
+        private MetricPusher _metricPusher;
 
         public Startup(IWebHostEnvironment env)
         {
@@ -70,9 +71,15 @@ namespace EpMon.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IHostApplicationLifetime applicationLifetime, IWebHostEnvironment env)
         {
-            app.UseDeveloperExceptionPage();
+            applicationLifetime.ApplicationStopping.Register(OnShutdown);
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
             app.UseStaticFiles();
            
             loggerFactory.AddLog4Net();
@@ -93,6 +100,11 @@ namespace EpMon.Web
                 _metricPusher = new MetricPusher(prometheusEndpoint, $"EpMon", Environment.MachineName);
                 _metricPusher.Start();
             }
+        }
+
+        private void OnShutdown()
+        {
+            _metricPusher.Stop();
         }
     }
 }

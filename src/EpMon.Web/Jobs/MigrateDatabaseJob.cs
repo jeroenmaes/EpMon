@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using CronScheduler.Extensions.StartupInitializer;
+﻿using CronScheduler.Extensions.StartupInitializer;
 using EpMon.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EpMon.Web.Jobs
 {

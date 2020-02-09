@@ -46,24 +46,7 @@ namespace EpMon.Data
 
             _connectionString = configuration.GetConnectionString("EpMonConnection");
         }
-
-        public override int SaveChanges()
-        {
-            var trackableEntities = ChangeTracker.Entries<ITrackableEntity>().ToList();
-
-            foreach (var item in trackableEntities.Where(t => t.State == EntityState.Added))
-            {
-                item.Entity.CreatedDateTime = System.DateTime.UtcNow;
-                item.Entity.ModifiedDateTime = System.DateTime.UtcNow;
-            }
-            foreach (var item in trackableEntities.Where(t => t.State == EntityState.Modified))
-            {
-                item.Entity.ModifiedDateTime = System.DateTime.UtcNow;
-            }
-            
-            return base.SaveChanges();
-        }
-
+        
         public DbSet<Endpoint> Endpoints { get; set; }
         public DbSet<EndpointStat> EndpointStats { get; set; }
     }

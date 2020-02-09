@@ -11,8 +11,8 @@ namespace EpMon.Monitor
 {
     public class HttpMonitor : IHealthMonitor
     {
-        public IHttpClientFactory HttpClientFactory;
-        public ITokenService TokenService;
+        private readonly IHttpClientFactory HttpClientFactory;
+        private readonly ITokenService TokenService;
 
         public HttpMonitor() : this("http")
         {

@@ -1,9 +1,7 @@
-﻿using EpMon.Data;
-using EpMon.Web.Jobs;
+﻿using EpMon.Web.Jobs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,20 +20,20 @@ namespace EpMon.Web.Extensions
                 services.AddScheduler(builder =>
                 {
                     builder.AddJob(provider => new EndpointJob(provider, endpoint));
-                    builder.UnobservedTaskExceptionHandler = (sender, exceptionEventArgs) => UnobservedJobHandlerHandler(sender, exceptionEventArgs, services);
+                    builder.UnobservedTaskExceptionHandler = (sender, exceptionEventArgs) => UnobservedJobHandlerHandler(exceptionEventArgs, services);
                 });
             }
 
             services.AddScheduler(builder =>
             {
                 builder.AddJob(provider => new MaintenanceJob(provider));
-                builder.UnobservedTaskExceptionHandler = (sender, exceptionEventArgs) => UnobservedJobHandlerHandler(sender, exceptionEventArgs, services);
+                builder.UnobservedTaskExceptionHandler = (sender, exceptionEventArgs) => UnobservedJobHandlerHandler(exceptionEventArgs, services);
             });
 
             return services;
         }
 
-        private static void UnobservedJobHandlerHandler(object sender, UnobservedTaskExceptionEventArgs e, IServiceCollection services)
+        private static void UnobservedJobHandlerHandler(UnobservedTaskExceptionEventArgs e, IServiceCollection services)
         {
             var logger = services.FirstOrDefault(service => service.ServiceType == typeof(ILogger));
             var loggerInstance = (ILogger)logger?.ImplementationInstance;

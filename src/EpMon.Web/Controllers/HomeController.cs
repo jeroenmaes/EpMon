@@ -14,11 +14,9 @@ namespace EpMon.Web.Controllers
     public class HomeController : Controller
     {
         private readonly EndpointStore _store;
-        private readonly ILogger _logger;
-
-        public HomeController(ILogger<HomeController> logger, EndpointStore store)
+        
+        public HomeController(EndpointStore store)
         {
-            _logger = logger;
             _store = store;
         }
         
@@ -67,7 +65,7 @@ namespace EpMon.Web.Controllers
             var responseTimeData = JsonConvert.SerializeObject(responseTimes);
             var uptimeData = JsonConvert.SerializeObject(uptimes);
 
-            var uptime = Math.Round(((double)stats.Count(x => x.IsHealthy == true) / (double) stats.Count()) * 100.00, 2);
+            var uptime = Math.Round(((double)stats.Count(x => x.IsHealthy) / (double) stats.Count()) * 100.00, 2);
             var responseTime = 0.0;
 
             if (stats.Any())

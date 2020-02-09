@@ -106,8 +106,8 @@ namespace EpMon.Data
             endpointEntity.CheckType = endpoint.CheckType;
             endpointEntity.IsActive = endpoint.IsActive;
             endpointEntity.IsCritical = endpoint.IsCritical;
-            endpointEntity.Tags = endpointEntity.Tags;
-            endpointEntity.PublishStats = endpointEntity.PublishStats;
+            endpointEntity.Tags = endpoint.Tags;
+            endpointEntity.PublishStats = endpoint.PublishStats;
 
             await _context.SaveChangesAsync();
         }
