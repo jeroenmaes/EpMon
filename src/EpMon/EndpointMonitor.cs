@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using EpMon.Publisher;
 
 namespace EpMon
 {
@@ -17,15 +18,19 @@ namespace EpMon
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly EndpointService _service;
         private readonly ITokenService _tokenService;
+        private readonly PrometheusPublisher _prometheusPublisher;
+        private readonly ApplicationInsightsPublisher _aiPublisher;
 
         private Model.Endpoint _endpoint;
 
-        public EndpointMonitor(IHttpClientFactory httpClientFactory, EndpointService service, ILogger<EndpointMonitor> logger, ITokenService tokenService)
+        public EndpointMonitor(IHttpClientFactory httpClientFactory, EndpointService service, ILogger<EndpointMonitor> logger, ITokenService tokenService, PrometheusPublisher prometheusPublisher, ApplicationInsightsPublisher aiPublisher)
         {
             _httpClientFactory = httpClientFactory;
             _tokenService = tokenService;
             _service = service;
             _logger = logger;
+            _prometheusPublisher = prometheusPublisher;
+            _aiPublisher = aiPublisher;
         }
 
         public void CheckHealth(Model.Endpoint endpoint)
@@ -41,14 +46,11 @@ namespace EpMon
 
                 _service.SaveHealthReport(_endpoint.Id, healthReport);
 
-                if (endpoint.PublishStats)
-                {
-                    _service.PublishHealthReport(_endpoint, healthReport);
-                }
+                _prometheusPublisher.PublishHealthReport(_endpoint, healthReport);
+                _aiPublisher.PublishHealthReport(_endpoint, healthReport);
             }
             catch (Exception e)
             { 
-                
                 _logger.LogError(e,$"Error while executing MonitorJob for endpoint {endpoint.Url} :: {e.Message}");
             }
         }

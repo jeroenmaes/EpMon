@@ -11,6 +11,7 @@ using Prometheus;
 using System;
 using System.Net;
 using System.Threading;
+using EpMon.Publisher;
 
 
 namespace EpMon.Web
@@ -52,6 +53,11 @@ namespace EpMon.Web
             services.AddTransient<EndpointMonitor, EndpointMonitor>();
             services.AddTransient<EndpointStore, EndpointStore>();
             services.AddTransient<EndpointService, EndpointService>();
+            services.AddSingleton<PrometheusPublisher, PrometheusPublisher>();
+            
+            var aiKey = Configuration.GetSection("EpMon:ApplicationInsightsKey").Value;
+            var publisher = new ApplicationInsightsPublisher(aiKey);
+            services.AddSingleton(publisher);
             
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
@@ -86,7 +92,7 @@ namespace EpMon.Web
             {
                 _metricPusher = new MetricPusher(prometheusEndpoint, $"EpMon", Environment.MachineName);
                 _metricPusher.Start();
-            }            
+            }
         }
     }
 }
