@@ -104,7 +104,7 @@ namespace EpMon.Web
 
         private void OnShutdown()
         {
-            _metricPusher.Stop();
+            _metricPusher?.Stop();
         }
     }
 }
