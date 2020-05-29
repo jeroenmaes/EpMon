@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Prometheus;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using EpMon.Publisher;
 using Microsoft.Extensions.Hosting;
@@ -49,7 +50,16 @@ namespace EpMon.Web
 
             services.AddStartupJob<MigrateDatabaseJob>();
 
-            services.AddHttpClient();
+            services.AddHttpClient("default").ConfigurePrimaryHttpMessageHandler(messageHandler =>
+            {
+                var handler = new HttpClientHandler();
+                if (handler.SupportsAutomaticDecompression)
+                {
+                    handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+                }
+                return handler;
+            });
+            
             services.AddSingleton<ITokenService, CachedTokenService>();
             services.AddTransient<EndpointMonitor, EndpointMonitor>();
             services.AddTransient<EndpointStore, EndpointStore>();
