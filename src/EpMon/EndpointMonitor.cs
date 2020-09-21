@@ -118,7 +118,10 @@ namespace EpMon
         {
             var result = new HealthReport();
 
-            var monitor = new HttpMonitor(_endpoint.Id.ToString(), _httpClientFactory, _tokenService);
+            //calculate httpMonitor timeout based on the check interval (1 minute for instance) substracted with 5 seconds
+            var timeout = TimeSpan.FromMinutes(_endpoint.CheckInterval).Subtract(TimeSpan.FromSeconds(5)).TotalSeconds;
+
+            var monitor = new HttpMonitor(_endpoint.Id.ToString(), _httpClientFactory, _tokenService, timeout);
             var sw = Stopwatch.StartNew();
             var info = monitor.CheckHealth(_endpoint.Url);
             result.TimeStamp = DateTime.UtcNow;

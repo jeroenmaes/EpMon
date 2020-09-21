@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using EpMon.Helpers;
+﻿using EpMon.Helpers;
 using EpMon.Infrastructure;
 using EpMon.Model;
 using IdentityModel.Client;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 
 namespace EpMon.Monitor
 {
@@ -13,6 +13,7 @@ namespace EpMon.Monitor
     {
         private readonly IHttpClientFactory HttpClientFactory;
         private readonly ITokenService TokenService;
+        private readonly double _timeout = 30;
 
         public HttpMonitor() : this("http")
         {
@@ -24,11 +25,12 @@ namespace EpMon.Monitor
         
         }
 
-        public HttpMonitor(string name, IHttpClientFactory httpClientFactory, ITokenService tokenService)
+        public HttpMonitor(string name, IHttpClientFactory httpClientFactory, ITokenService tokenService, double timeoutInSeconds)
         {
             Name = name;
             HttpClientFactory = httpClientFactory;
             TokenService = tokenService;
+            _timeout = timeoutInSeconds;
         }
 
         public string Name { get; }
@@ -40,7 +42,7 @@ namespace EpMon.Monitor
                 var baseUri = UriHelper.GetBaseUri(address);
                 
                 var httpClient = HttpClientFactory.CreateClient(baseUri);
-                httpClient.Timeout = TimeSpan.FromSeconds(30);
+                httpClient.Timeout = TimeSpan.FromSeconds(_timeout);
 
                 var token = TokenService.GetToken();
 
