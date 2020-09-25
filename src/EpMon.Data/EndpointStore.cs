@@ -53,7 +53,23 @@ namespace EpMon.Data
 
         public async Task<Endpoint> GetByEndpointIdAsync(int endpointId)
         {
-            return await _context.Endpoints.AsNoTracking().FirstOrDefaultAsync(q => q.Id == endpointId);
+            return await _context.Endpoints.AsNoTracking()
+                .Include(x => x.Stats)
+                .Where(x => x.Id == endpointId)
+                .Select(y => new Endpoint
+                {
+                    Id = y.Id,
+                    CheckType = y.CheckType,
+                    PublishStats = y.PublishStats,
+                    CheckInterval = y.CheckInterval,
+                    IsCritical = y.IsCritical,
+                    IsActive = y.IsActive,
+                    Name = y.Name,
+                    Tags = y.Tags,
+                    Url = y.Url,
+                    Stats = y.Stats.Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-24)).ToList()
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<string>> GetAllEndpointTagsAsync()
@@ -64,30 +80,47 @@ namespace EpMon.Data
         public async Task<IEnumerable<Endpoint>> GetAllEndpointsAsync(string tagFilter)
         {
             IEnumerable<Endpoint> endpoints;
-            List<Endpoint> returnValues = new List<Endpoint>();
-
+            
             if (tagFilter != "")
             {
-                endpoints = await _context.Endpoints.AsNoTracking().Where(y => y.Tags.ToLower().Equals(tagFilter.ToLower())).ToListAsync();
+                endpoints = await _context.Endpoints.AsNoTracking().Include(x => x.Stats)
+                    .Where(y => y.Tags.ToLower().Equals(tagFilter.ToLower()) && y.IsActive)
+                    .Select(y => new Endpoint
+                    {
+                        Id = y.Id,
+                        CheckType = y.CheckType,
+                        PublishStats = y.PublishStats,
+                        CheckInterval = y.CheckInterval,
+                        IsCritical = y.IsCritical,
+                        IsActive = y.IsActive,
+                        Name = y.Name,
+                        Tags = y.Tags,
+                        Url = y.Url,
+                        Stats = y.Stats.Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-24)).ToList()
+                    })
+                    .ToListAsync();
             }
             else
             {
-                endpoints = await _context.Endpoints.AsNoTracking().ToListAsync();
+                endpoints = await _context.Endpoints.AsNoTracking().Include(x => x.Stats)
+                    .Where(y => y.IsActive)
+                    .Select(y => new Endpoint
+                    {
+                        Id = y.Id,
+                        CheckType = y.CheckType,
+                        PublishStats = y.PublishStats,
+                        CheckInterval = y.CheckInterval,
+                        IsCritical = y.IsCritical,
+                        IsActive = y.IsActive,
+                        Name = y.Name,
+                        Tags = y.Tags,
+                        Url = y.Url,
+                        Stats = y.Stats.Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-24)).ToList()
+                    })
+                    .ToListAsync();
             }
-
-
-            foreach (var endpoint in endpoints.Where(x => x.IsActive))
-            {
-                var stat = await GetLastEndpointStatAsync(endpoint.Id);
-                if (stat != null)
-                {
-                    endpoint.Stats = new List<EndpointStat> {stat};
-                }
-
-                returnValues.Add(endpoint);
-            }
-
-            return returnValues;
+            
+            return endpoints;
         }
 
         public async Task DeleteEndpointById(int endpointId)
@@ -110,19 +143,6 @@ namespace EpMon.Data
             endpointEntity.PublishStats = endpoint.PublishStats;
 
             await _context.SaveChangesAsync();
-        }
-        
-        public IQueryable<EndpointStat> GetEndpointStatsAsync(int endpointId, int maxHours)
-        {
-            return _context.EndpointStats.AsNoTracking().Where(q => q.EndpointId == endpointId)
-                .Where(x => x.TimeStamp >= DateTime.UtcNow.AddHours(-maxHours))
-                .OrderByDescending(x => x.TimeStamp).AsQueryable();
-        }
-        
-        public async Task<EndpointStat> GetLastEndpointStatAsync(int endpointId)
-        {
-            var stat = _context.EndpointStats.AsNoTracking().Where(q => q.Endpoint.Id == endpointId).OrderByDescending(x => x.TimeStamp).Take(1).FirstOrDefaultAsync();
-            return await stat;
         }
     }
 }

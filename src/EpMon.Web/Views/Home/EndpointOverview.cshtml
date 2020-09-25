@@ -1,4 +1,4 @@
-﻿@model EpMon.Web.Models.EndpointsOverview
+﻿@model EpMon.Web.ViewModels.EndpointsOverviewViewModel
 
 @using System.Globalization;
 
@@ -12,6 +12,8 @@
             <th scope="col">Type</th>
             <th scope="col">Interval</th>
             <th scope="col">Critical</th>
+            <th scope="col">Uptime</th>
+            <th scope="col">Responsetime</th>
             <th scope="col">Healthy</th>
             <th scope="col">Last Checked</th>
         </tr>
@@ -21,41 +23,44 @@
     {
         var lastStat = endpoint.Stats?.FirstOrDefault();
 
-        <tr>
+<tr>
 
-            <td scope="row" style="width:55%">
-                @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
+    <td scope="row" style="width:45%">
+        @Html.ActionLink(endpoint.Name, "EndpointStats", new { id = endpoint.Id }, null)
+    </td>
+    <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
+    <td>@endpoint.CheckInterval min</td>
+    <td>@endpoint.IsCritical</td>
+    <td>@endpoint.Uptime %</td>
+    <td>@endpoint.ResponseTime ms</td>
+
+    @if (lastStat != null)
+    {
+        if (!lastStat.IsHealthy && endpoint.IsCritical == true)
+        {
+            <td class="table-danger">
+                NOK
             </td>
-            <td>@endpoint.CheckType.ToString().Replace("Check", "")</td>
-            <td>@endpoint.CheckInterval min</td>
-            <td>@endpoint.IsCritical</td>
-            @if (lastStat != null)
-            {
-                if (!lastStat.IsHealthy && endpoint.IsCritical == true)
-                {
-                    <td class="table-danger">
-                        NOK
-                    </td>
-                }
-                else if (!lastStat.IsHealthy && endpoint.IsCritical == false)
-                {
-                    <td class="table-warning">
-                        NOK
-                    </td>
-                }
-                else
-                {
-                    <td class="table-success">
-                        OK
-                    </td>
-                }
-            }
-            <td>
-                @if (lastStat != null)
-                {
-                    @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
-                }
+        }
+        else if (!lastStat.IsHealthy && endpoint.IsCritical == false)
+        {
+            <td class="table-warning">
+                NOK
             </td>
-        </tr>
+        }
+        else
+        {
+            <td class="table-success">
+                OK
+            </td>
+        }
+    }
+    <td>
+        @if (lastStat != null)
+        {
+            @lastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))
+        }
+    </td>
+</tr>
     }
 </table>

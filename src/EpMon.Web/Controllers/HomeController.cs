@@ -1,12 +1,11 @@
-﻿using System;
+﻿using EpMon.Data;
+using EpMon.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EpMon.Data;
-using EpMon.Web.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using X.PagedList;
 
 namespace EpMon.Web.Controllers
@@ -32,26 +31,25 @@ namespace EpMon.Web.Controllers
         {
             var endpoints = await _store.GetAllEndpointsAsync(tagName);
                        
-            return PartialView("EndpointOverview", new EndpointsOverview { TagName = tagName, Endpoints = endpoints.ToList() });
+            return PartialView("EndpointOverview", new EndpointsOverviewViewModel() { TagName = tagName, Endpoints = endpoints.ToDto() });
         }
 
         public async Task<ActionResult> EndpointStats(int? id, int? page, string start = "", string end = "")
         {
-            id = id ?? 1;
+            id ??= 1;
             var pageNumber = page ?? 1;
             var pageSize = 15;
-            var maxHours = 24;
-
-            var stats = _store.GetEndpointStatsAsync(id.Value, maxHours);
-            var pagedStats = await _store.GetEndpointStatsAsync(id.Value, maxHours).ToPagedListAsync(pageNumber, pageSize);
-
+            
             var endpoint = await _store.GetByEndpointIdAsync(id.Value);
-            var lastStat = stats.FirstOrDefault();
+            var pagedStats = await endpoint.Stats.Select(x => x.ToDto())
+                .OrderByDescending( x=> x.TimeStamp)
+                .ToPagedListAsync(pageNumber, pageSize);
 
+            var lastStat = endpoint.Stats.Last();
             var responseTimes = new List<long[]>();
             var uptimes = new List<long[]>();
 
-            foreach (var stat in stats)
+            foreach (var stat in endpoint.Stats)
             {
                 var unixTimestamp = ((DateTimeOffset)stat.TimeStamp).ToUnixTimeMilliseconds();
 
@@ -65,21 +63,13 @@ namespace EpMon.Web.Controllers
             var responseTimeData = JsonConvert.SerializeObject(responseTimes);
             var uptimeData = JsonConvert.SerializeObject(uptimes);
 
-            var uptime = Math.Round(((double)stats.Count(x => x.IsHealthy) / (double) stats.Count()) * 100.00, 2);
-            var responseTime = 0.0;
-
-            if (stats.Any())
-                responseTime = Math.Round(stats.Average(x => x.ResponseTime), 2);
-
-            return View(new EndpointDetails
+            return View(new EndpointDetailsViewModel()
             {
                 Stats = pagedStats,
-                Endpoint = endpoint,
+                Endpoint = endpoint.ToDto(),
                 ResponseTimeData = responseTimeData,
                 UptimeData = uptimeData,
-                ResponseTime = responseTime,
-                Uptime = uptime,
-                LastStat = lastStat
+                LastStat = lastStat.ToDto()
             });
         }
     }

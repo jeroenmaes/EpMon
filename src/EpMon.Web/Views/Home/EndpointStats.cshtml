@@ -9,7 +9,7 @@
 @using System.Globalization;
 @using X.PagedList.Mvc.Core.Common
 
-@model EpMon.Web.Models.EndpointDetails
+@model EpMon.Web.ViewModels.EndpointDetailsViewModel
 
 <div class="row">
     <div class="col-md-12">
@@ -41,11 +41,11 @@
 
             <tr>
                 <td>Uptime</td>
-                <td>@Model.Uptime %</td>
+                <td>@Model.Endpoint.Uptime %</td>
             </tr>
             <tr>
                 <td>Response Time</td>
-                <td>@Model.ResponseTime ms</td>
+                <td>@Model.Endpoint.ResponseTime ms</td>
             </tr>
             <tr>
                 <td>Tag</td>
@@ -108,7 +108,7 @@
                     <td scope="row">@stat.IsHealthy</td>
                     <td>@stat.Status</td>
                     <td>@stat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))</td>
-                    <td>@stat.ResponseTime</td>
+                    <td>@stat.ResponseTime ms</td>
                     <td>@jsonString</td>
                 </tr>
             }
