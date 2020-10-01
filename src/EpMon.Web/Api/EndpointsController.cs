@@ -12,12 +12,9 @@ namespace EpMon.Web.Api
     public class EndpointsController : BaseApiController
     {
         private readonly EndpointStore _store;
-        private readonly ILogger _logger;
-
-
-        public EndpointsController(ILogger<EndpointsController> logger, EndpointStore store)
+        
+        public EndpointsController(EndpointStore store)
         {
-            _logger = logger;
             _store = store;
         }
 

@@ -20,7 +20,7 @@ namespace EpMon.Web.ViewModels
             if (e.Stats.Any())
             {
                 responseTime = Math.Round(e.Stats.Average(x => x.ResponseTime), 2);
-                upTime = Math.Round(((double)e.Stats.Count(x => x.IsHealthy) / (double)e.Stats.Count()) * 100.00, 2);
+                upTime = Math.Round(((double)e.Stats.Count(x => x.IsHealthy) / (double)e.Stats.Count) * 100.00, 2);
             }
 
             return new EndpointDto

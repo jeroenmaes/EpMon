@@ -21,7 +21,7 @@
 
     @foreach (var endpoint in @Model.Endpoints)
     {
-        var lastStat = endpoint.Stats?.FirstOrDefault();
+        var lastStat = endpoint.Stats?.OrderByDescending(x => x.TimeStamp).FirstOrDefault();
 
 <tr>
 
