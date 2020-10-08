@@ -45,7 +45,7 @@ namespace EpMon.Web.Controllers
                 .OrderByDescending( x=> x.TimeStamp)
                 .ToPagedListAsync(pageNumber, pageSize);
 
-            var lastStat = endpoint.Stats.Last();
+            var lastStat = endpoint.Stats.LastOrDefault();
             var responseTimes = new List<long[]>();
             var uptimes = new List<long[]>();
 

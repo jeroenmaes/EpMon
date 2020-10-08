@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 namespace EpMon.Monitor
 {
@@ -14,6 +15,7 @@ namespace EpMon.Monitor
         private readonly IHttpClientFactory HttpClientFactory;
         private readonly ITokenService TokenService;
         private readonly double _timeout = 30;
+        private readonly ILogger _logger;
 
         public HttpMonitor() : this("http")
         {
@@ -25,12 +27,13 @@ namespace EpMon.Monitor
         
         }
 
-        public HttpMonitor(string name, IHttpClientFactory httpClientFactory, ITokenService tokenService, double timeoutInSeconds)
+        public HttpMonitor(string name, IHttpClientFactory httpClientFactory, ITokenService tokenService, double timeoutInSeconds, ILogger logger)
         {
             Name = name;
             HttpClientFactory = httpClientFactory;
             TokenService = tokenService;
             _timeout = timeoutInSeconds;
+            _logger = logger;
         }
 
         public string Name { get; }
@@ -52,7 +55,7 @@ namespace EpMon.Monitor
                 }
                 
                 var response = AsyncHelper.RunSync(() => httpClient.GetAsync(address));
-
+                
                 if (response.StatusCode == HttpStatusCode.NotFound)
                     return new HealthInfo(HealthStatus.NotExists);
                 if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
@@ -64,6 +67,8 @@ namespace EpMon.Monitor
             }
             catch (Exception e)
             {
+                _logger.LogError(e, e.Message);
+
                 var content = new Dictionary<string, string>
                 {
                     {"code","500"},

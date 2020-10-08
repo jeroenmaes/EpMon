@@ -26,7 +26,7 @@ namespace EpMon.Web.Jobs
 
         private void ConfigureJob()
         {
-            CronSchedule = "* * * * *";
+            CronSchedule = $"*/{_endpoint.CheckInterval} * * * *";
             RunImmediately = true;            
         }
 
