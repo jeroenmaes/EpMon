@@ -57,6 +57,8 @@ namespace EpMon.Web
                 {
                     handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
                 }
+                //do not use cookies to avoid load balancer issues
+                handler.UseCookies = false;
                 return handler;
             });
             
