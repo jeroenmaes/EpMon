@@ -27,13 +27,14 @@ steps:
     restoreSolution: '$(solution)'
 
 - task: SonarCloudPrepare@1
+  continueOnError: true
   inputs:
     SonarCloud: 'SonarCloud'
     organization: 'jeroenmaes'
     scannerMode: 'MSBuild'
     projectKey: 'epmon'
     projectName: 'EpMon'
-
+    
 - task: MSBuild@1
   inputs:
     solution: '$(solution)'
@@ -47,7 +48,9 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: SonarCloudAnalyze@1
+  continueOnError: true
 
 - task: SonarCloudPublish@1
+  continueOnError: true
   inputs:
     pollingTimeoutSec: '300'
