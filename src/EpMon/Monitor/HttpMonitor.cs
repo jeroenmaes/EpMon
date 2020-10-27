@@ -67,7 +67,7 @@ namespace EpMon.Monitor
             }
             catch (Exception e)
             {
-                _logger.LogError(e, e.Message);
+                _logger?.LogError(e, e.Message);
 
                 var content = new Dictionary<string, string>
                 {
