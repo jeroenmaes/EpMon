@@ -24,7 +24,6 @@ namespace EpMon.Monitor
         public HttpMonitor(string name)
         {
             Name = name;
-        
         }
 
         public HttpMonitor(string name, IHttpClientFactory httpClientFactory, ITokenService tokenService, double timeoutInSeconds, ILogger logger)
@@ -44,10 +43,10 @@ namespace EpMon.Monitor
             {
                 var baseUri = UriHelper.GetBaseUri(address);
                 
-                var httpClient = HttpClientFactory.CreateClient(baseUri);
+                var httpClient = GetHttpClient(baseUri);
                 httpClient.Timeout = TimeSpan.FromSeconds(_timeout);
 
-                var token = TokenService.GetToken();
+                var token = TokenService?.GetToken();
 
                 if (token != string.Empty)
                 {
@@ -77,6 +76,14 @@ namespace EpMon.Monitor
 
                 return new HealthInfo(HealthStatus.Faulty, content);
             }
+        }
+
+        private HttpClient GetHttpClient(string baseUri)
+        {
+            if(HttpClientFactory == null)
+                return new HttpClient();
+
+            return HttpClientFactory.CreateClient(baseUri);
         }
 
         private IReadOnlyDictionary<string, string> ReadContent(HttpResponseMessage response)
