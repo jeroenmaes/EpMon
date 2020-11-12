@@ -42,9 +42,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="4.4.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.15.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0-rc.2.20475.5" />
-    <PackageReference Include="prometheus-net" Version="3.6.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.16.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Include="prometheus-net" Version="4.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EpMon.Data\EpMon.Data.csproj" />
