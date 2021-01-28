@@ -82,7 +82,6 @@ namespace EpMon.Infrastructure
                 _cachedTokenExpiration = DateTime.MinValue;
                 _cachedToken = string.Empty;
 
-                //_logger.LogError($"Error requesting token : ({tokenResponse?.Error} - {tokenResponse?.Exception.InnerException?.Message})");
                 _logger.LogError($"Error requesting token : ({tokenResponse?.ErrorDescription} - {tokenResponse?.HttpErrorReason})");
             }
             else

@@ -12,7 +12,7 @@ namespace EpMon.Web
 
             await host.RunStartupJobsAync();
 
-            host.Run();
+            await host.RunAsync();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

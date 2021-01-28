@@ -2,8 +2,10 @@
 using EpMon.Data;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace EpMon.Web.Jobs
 {
@@ -32,7 +34,16 @@ namespace EpMon.Web.Jobs
             using (var scope = _provider.CreateScope())
             {
                 var endpointStore = scope.ServiceProvider.GetService<EndpointStore>();
-                endpointStore.RemoveEndpointStatsByDaysToKeep(30);
+                var config = scope.ServiceProvider.GetService<IConfiguration>();
+                var daysToKeepSetting = config.GetSection("EpMon:DataRetentionInDays").Value;
+
+                var daysToKeep = 1;
+                if (!string.IsNullOrEmpty(daysToKeepSetting))
+                {
+                    daysToKeep = int.Parse(daysToKeepSetting);
+                }
+                
+                await endpointStore.RemoveEndpointStatsByDaysToKeep(daysToKeep);
             }
 
             await Task.CompletedTask;

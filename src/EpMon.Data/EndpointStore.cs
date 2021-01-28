@@ -36,18 +36,20 @@ namespace EpMon.Data
             context.SaveChanges();
         }
 
-        public void RemoveEndpointStatsByDaysToKeep(int daysToKeep)
+        public async Task RemoveEndpointStatsByDaysToKeep(int daysToKeep)
         {
-            using var context = new EpMonContext();
-            var compareWith = DateTime.UtcNow.AddDays(-daysToKeep);
-            var statsToRemove = context.EndpointStats.Where(x => (x.TimeStamp <= compareWith));
-            context.EndpointStats.RemoveRange(statsToRemove);
-            context.SaveChanges();
+            await using var context = new EpMonContext();
+
+            var minDate = DateTime.UtcNow.AddDays(-daysToKeep);
+            
+            await context.Database.ExecuteSqlRawAsync($"DELETE FROM EndpointStats WHERE TimeStamp <= '{minDate.ToString("yyyy-MM-dd HH:mm:ss")}'");
+
+            await context.SaveChangesAsync();
         }
 
         public async Task StoreEndpointAsync(Endpoint endpoint)
         {
-            _context.Endpoints.Add(endpoint);
+            await _context.Endpoints.AddAsync(endpoint);
             await _context.SaveChangesAsync();
         }
 
