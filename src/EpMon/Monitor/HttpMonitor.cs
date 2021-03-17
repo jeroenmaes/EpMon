@@ -44,8 +44,7 @@ namespace EpMon.Monitor
                 var baseUri = UriHelper.GetBaseUri(address);
                 
                 var httpClient = GetHttpClient(baseUri);
-                httpClient.Timeout = TimeSpan.FromSeconds(_timeout);
-
+                
                 var token = TokenService?.GetToken();
 
                 if (token != string.Empty)
@@ -83,7 +82,11 @@ namespace EpMon.Monitor
             if(HttpClientFactory == null)
                 return new HttpClient();
 
-            return HttpClientFactory.CreateClient(baseUri);
+            var client = HttpClientFactory.CreateClient("default");
+            client.BaseAddress = new Uri(baseUri);
+            client.Timeout = TimeSpan.FromSeconds(_timeout);
+
+            return client;
         }
 
         private IReadOnlyDictionary<string, string> ReadContent(HttpResponseMessage response)

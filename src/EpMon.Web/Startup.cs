@@ -72,7 +72,7 @@ namespace EpMon.Web
             var publisher = new ApplicationInsightsPublisher(aiKey);
             services.AddSingleton(publisher);
             
-            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddMvc(options => options.EnableEndpointRouting = false).AddNewtonsoftJson(); 
 
             services.AddSwaggerGen(c =>
             {
