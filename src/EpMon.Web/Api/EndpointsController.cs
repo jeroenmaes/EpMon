@@ -21,7 +21,7 @@ namespace EpMon.Web.Api
         [HttpPost("/endpoints")]
         public async Task RegisterEndpoint([FromBody]EndpointDto endpointDto)
         {
-            var endpoint = new Endpoint { Name = endpointDto.Name, CheckInterval = endpointDto.CheckInterval, CheckType = (CheckType)endpointDto.CheckInterval, IsActive = endpointDto.IsActive, IsCritical = endpointDto.IsCritical, Tags = endpointDto.Tags, Url = endpointDto.Url };
+            var endpoint = new Endpoint { Name = endpointDto.Name, CheckInterval = endpointDto.CheckInterval, CheckType = (CheckType)endpointDto.CheckType, IsActive = endpointDto.IsActive, IsCritical = endpointDto.IsCritical, Tags = endpointDto.Tags, Url = endpointDto.Url };
             await _store.StoreEndpointAsync(endpoint);
         }
 
@@ -51,7 +51,7 @@ namespace EpMon.Web.Api
         [HttpGet("/endpoints")]
         public async Task<IEnumerable<EndpointDto>> GetEndpoints()
         {
-            return (await _store.GetAllEndpointsAsync("")).Select(x => new EndpointDto { Name  = x.Name, CheckInterval = x.CheckInterval, CheckType = x.CheckInterval, IsActive = x.IsActive, Tags = x.Tags, IsCritical = x.IsCritical, Url = x.Url, Id = x.Id});
+            return (await _store.GetAllEndpointsAsync("")).Select(x => new EndpointDto { Name  = x.Name, CheckInterval = x.CheckInterval, CheckType = (int)x.CheckType, IsActive = x.IsActive, Tags = x.Tags, IsCritical = x.IsCritical, Url = x.Url, Id = x.Id});
         }
 
         [HttpDelete("/endpoints/{id}")]
