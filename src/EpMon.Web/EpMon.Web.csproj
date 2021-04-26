@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
-    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+    <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <ApplicationInsightsResourceId>/subscriptions/99d98842-25c6-4697-a2f2-a8bc98a91fe8/resourcegroups/EpMon/providers/microsoft.insights/components/epmon</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/99d98842-25c6-4697-a2f2-a8bc98a91fe8/resourcegroups/EpMon/providers/microsoft.insights/components/epmon</ApplicationInsightsAnnotationResourceId>
     <UserSecretsId>af9f9f9d-7776-4509-a357-e97fda86cf7a</UserSecretsId>
