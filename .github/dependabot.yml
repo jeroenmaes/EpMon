@@ -1,0 +1,57 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Microsoft.EntityFrameworkCore
+    versions:
+    - 5.0.3
+    - 5.0.4
+    - 5.0.5
+  - dependency-name: Microsoft.EntityFrameworkCore.SqlServer
+    versions:
+    - 5.0.3
+    - 5.0.4
+    - 5.0.5
+  - dependency-name: Microsoft.AspNetCore.Mvc.NewtonsoftJson
+    versions:
+    - 5.0.5
+  - dependency-name: Microsoft.EntityFrameworkCore.Tools
+    versions:
+    - 5.0.3
+    - 5.0.4
+    - 5.0.5
+  - dependency-name: Microsoft.NET.Test.Sdk
+    versions:
+    - 16.9.1
+    - 16.9.4
+  - dependency-name: IdentityModel
+    versions:
+    - 5.0.0
+    - 5.0.1
+    - 5.1.0
+  - dependency-name: Microsoft.Extensions.Logging.Log4Net.AspNetCore
+    versions:
+    - 5.0.1
+  - dependency-name: Swashbuckle.AspNetCore
+    versions:
+    - 6.0.2
+    - 6.0.4
+    - 6.0.5
+    - 6.0.7
+    - 6.1.0
+    - 6.1.1
+  - dependency-name: MSTest.TestFramework
+    versions:
+    - 2.2.1
+    - 2.2.2
+  - dependency-name: Microsoft.ApplicationInsights
+    versions:
+    - 2.17.0
+  - dependency-name: Microsoft.VisualStudio.Web.CodeGeneration.Design
+    versions:
+    - 5.0.2
