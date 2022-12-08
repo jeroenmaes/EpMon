@@ -5,7 +5,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/EpMon.Web/EpMon.Web.csproj", "src/EpMon.Web/"]
 COPY ["src/EpMon/EpMon.csproj", "src/EpMon/"]
@@ -16,7 +16,7 @@ WORKDIR "/src/src/EpMon.Web"
 RUN dotnet build "EpMon.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "EpMon.Web.csproj" -c Release -o /app/publish
+RUN dotnet publish "EpMon.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
