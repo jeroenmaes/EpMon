@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using EpMon.Data.Entities;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -24,16 +25,22 @@ namespace EpMon.Data
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+        {            
             LoadConnectionString();
 
-            //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-            optionsBuilder.UseSqlServer(_connectionString, options => 
-                options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
+            if (_connectionString.Contains(".db"))
+            {
+                optionsBuilder.UseSqlite(_connectionString);
+            }
+            else
+            {
+                //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                optionsBuilder.UseSqlServer(_connectionString, options =>
+                    options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
 
-            optionsBuilder.UseSqlServer(_connectionString, options => 
-                options.MigrationsAssembly(typeof(EpMonContext).GetTypeInfo().Assembly.GetName().Name));
-
+                optionsBuilder.UseSqlServer(_connectionString, options =>
+                    options.MigrationsAssembly(typeof(EpMonContext).GetTypeInfo().Assembly.GetName().Name));
+            }
         }
 
 
@@ -41,6 +48,7 @@ namespace EpMon.Data
         {
             var builder = new ConfigurationBuilder();
             builder.AddJsonFile("appsettings.json", false);
+            builder.AddJsonFile("appsettings.Development.json", false);
 
             var configuration = builder.Build();
 
