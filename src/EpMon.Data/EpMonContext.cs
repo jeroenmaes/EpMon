@@ -47,8 +47,8 @@ namespace EpMon.Data
         private static void LoadConnectionString()
         {
             var builder = new ConfigurationBuilder();
-            builder.AddJsonFile("appsettings.json", false);
-            builder.AddJsonFile("appsettings.Development.json", false);
+            builder.AddJsonFile("appsettings.json", true);
+            builder.AddJsonFile("appsettings.Development.json", true);
 
             var configuration = builder.Build();
 
