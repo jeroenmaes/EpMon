@@ -92,16 +92,23 @@
             {
                 var jsonString = "";
 
-                try
+                if ((@stat.Message.StartsWith("{") && @stat.Message.EndsWith("}")) || (@stat.Message.StartsWith("[") && @stat.Message.EndsWith("]")))
                 {
-                    jsonString = JToken.Parse(@stat.Message).ToString(Formatting.Indented);
-                }
-                catch (Exception /*e*/)
-                {
-                    if (!string.IsNullOrWhiteSpace(@stat.Message))
+                    try
                     {
-                        jsonString = @stat.Message.Length >= 100 ? @stat.Message.Substring(0, 100) : @stat.Message;
+                        jsonString = JToken.Parse(@stat.Message).ToString(Formatting.Indented);
                     }
+                    catch (Exception /*e*/)
+                    {
+                        if (!string.IsNullOrWhiteSpace(@stat.Message))
+                        {
+                            jsonString = @stat.Message.Length >= 100 ? @stat.Message.Substring(0, 100) : @stat.Message;
+                        }
+                    }
+                }
+                else
+                {
+                    jsonString = @stat.Message.Length >= 100 ? @stat.Message.Substring(0, 100) : @stat.Message;
                 }
 
                 <tr>
