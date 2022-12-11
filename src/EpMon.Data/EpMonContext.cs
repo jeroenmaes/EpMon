@@ -28,7 +28,7 @@ namespace EpMon.Data
         {            
             LoadConnectionString();
 
-            if (_connectionString.Contains(".db"))
+            if (_connectionString.Contains(".db") || _connectionString.Contains("Memory"))
             {
                 optionsBuilder.UseSqlite(_connectionString);
             }
