@@ -13,10 +13,10 @@ COPY ["src/EpMon.Data/EpMon.Data.csproj", "src/EpMon.Data/"]
 RUN dotnet restore "src/EpMon.Web/EpMon.Web.csproj"
 COPY . .
 WORKDIR "/src/src/EpMon.Web"
-RUN dotnet build "EpMon.Web.csproj" -c Release -o /app/build
+RUN dotnet build "EpMon.Web.csproj" -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish "EpMon.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "EpMon.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app
