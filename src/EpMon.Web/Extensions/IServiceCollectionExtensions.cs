@@ -22,14 +22,26 @@ namespace EpMon.Web.Extensions
                 {
                     services.AddScheduler(builder =>
                     {
-                        builder.AddJob(provider => new EndpointJob(provider, endpoint));
+                        builder.AddJob(provider => new EndpointJob(provider, new CronScheduler.Extensions.Scheduler.SchedulerOptions { CronSchedule = $"*/{endpoint.CheckInterval} * * * *", RunImmediately = true }, endpoint), options =>
+                        {
+                            options.CronSchedule = $"*/{endpoint.CheckInterval} * * * *";
+                            options.RunImmediately = true;
+                        },
+                        jobName: $"{nameof(EndpointJob)}_{endpoint.Id}");
+
                         builder.UnobservedTaskExceptionHandler = (sender, exceptionEventArgs) => UnobservedJobHandlerHandler(exceptionEventArgs, services);
                     });
                 }
 
                 services.AddScheduler(builder =>
                 {
-                    builder.AddJob(provider => new MaintenanceJob(provider));
+                    builder.AddJob(provider => new MaintenanceJob(provider, new CronScheduler.Extensions.Scheduler.SchedulerOptions { CronSchedule = "1 * * * *", RunImmediately = true }), options =>
+                    {
+                        options.CronSchedule = "1 * * * *";
+                        options.RunImmediately = true;
+                    },
+                    jobName: nameof(MaintenanceJob));
+
                     builder.UnobservedTaskExceptionHandler = (sender, exceptionEventArgs) => UnobservedJobHandlerHandler(exceptionEventArgs, services);
                 });
             }

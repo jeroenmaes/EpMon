@@ -29,6 +29,8 @@ namespace EpMon.Web.Jobs
             {
                 Console.WriteLine(e);
             }
+
+            await Task.CompletedTask;
         }
     }
 }
