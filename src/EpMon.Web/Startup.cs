@@ -93,9 +93,9 @@ namespace EpMon.Web
             }
 
             app.UseStaticFiles();
-           
-            loggerFactory.AddLog4Net();
-            
+
+            loggerFactory.AddFile(Configuration.GetSection("Logging"));
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
