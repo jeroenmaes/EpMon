@@ -50,8 +50,6 @@ namespace EpMon.Web.Extensions
                 var logger = services.FirstOrDefault(service => service.ServiceType == typeof(ILogger));
                 var loggerInstance = (ILogger)logger?.ImplementationInstance;
                 loggerInstance?.LogCritical(e, "Exception in AddScheduledJobs");
-
-                Console.WriteLine("ERROR: " + e.Message);
             }
 
             return services;
@@ -62,9 +60,6 @@ namespace EpMon.Web.Extensions
             var logger = services.FirstOrDefault(service => service.ServiceType == typeof(ILogger));
             var loggerInstance = (ILogger)logger?.ImplementationInstance;
             loggerInstance?.LogCritical(e.Exception, "Unhandled job exception");
-
-            Console.WriteLine("ERROR: " + e.Exception);
-
             e.SetObserved();
         }
     }

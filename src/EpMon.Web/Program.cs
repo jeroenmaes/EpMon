@@ -16,9 +16,7 @@ namespace EpMon.Web
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)                
-                .CaptureStartupErrors(true) // the default
-                .UseSetting("detailedErrors", "true")
+            WebHost.CreateDefaultBuilder(args)               
                 .UseStartup<Startup>();
     }
 }

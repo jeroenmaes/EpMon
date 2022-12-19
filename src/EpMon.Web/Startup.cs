@@ -31,20 +31,26 @@ namespace EpMon.Web
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            
+
             ServicePointManager.DefaultConnectionLimit = 1000;
             ThreadPool.SetMinThreads(100, 100);
         }
-        
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<EpMonContext>();
+            services.AddLogging(
+                    c =>
+                    {
+                        c.AddConsole();
+                        c.AddFile(Configuration.GetSection("Logging"));
+                    });
 
+            services.AddDbContext<EpMonContext>();
             services.AddStartupJob<MigrateDatabaseJob>();
-                       
+
             services.AddHttpClient("default").ConfigurePrimaryHttpMessageHandler(messageHandler =>
             {
                 var handler = new HttpClientHandler();
@@ -56,29 +62,29 @@ namespace EpMon.Web
                 handler.UseCookies = false;
                 return handler;
             });
-            
+
             services.AddSingleton<ITokenService, CachedTokenService>();
             services.AddTransient<EndpointMonitor, EndpointMonitor>();
             services.AddTransient<EndpointStore, EndpointStore>();
             services.AddTransient<EndpointService, EndpointService>();
             services.AddSingleton<PrometheusPublisher, PrometheusPublisher>();
-            
+
             var aiKey = Configuration.GetSection("EpMon:ApplicationInsightsKey").Value;
             var publisher = new ApplicationInsightsPublisher(aiKey);
             services.AddSingleton(publisher);
-            
-            services.AddMvc(options => options.EnableEndpointRouting = false).AddNewtonsoftJson(); 
+
+            services.AddMvc(options => options.EnableEndpointRouting = false).AddNewtonsoftJson();
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "EpMon API", Version = "v1" });
             });
 
-            services.AddScheduledJobs();            
+            services.AddScheduledJobs();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IHostApplicationLifetime applicationLifetime, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostApplicationLifetime applicationLifetime, IWebHostEnvironment env)
         {
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
 
@@ -89,8 +95,6 @@ namespace EpMon.Web
 
             app.UseStaticFiles();
 
-            loggerFactory.AddFile(Configuration.GetSection("Logging"));
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -99,7 +103,7 @@ namespace EpMon.Web
             });
 
             app.UseOpenApiUi(Configuration);
-            
+
             Metrics.SuppressDefaultMetrics();
             var prometheusEndpoint = Configuration.GetSection("EpMon:PrometheusPushGateway").Value;
             if (!string.IsNullOrEmpty(prometheusEndpoint))

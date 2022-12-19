@@ -92,19 +92,11 @@ namespace EpMon
         private void ConsoleLog(HealthReport result)
         {
             if (result.IsHealthy)
-            {
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine($"{result.TimeStamp} :: Healthy : {_endpoint.Url} : {result.ResponseTime} ms");
-                Console.ResetColor();
-
+            {               
                 _logger.LogInformation($"{result.Status} : {_endpoint.Url} : {result.ResponseTime} ms");
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{result.TimeStamp} :: NotHealthy : {_endpoint.Url}");
-                Console.ResetColor();
-
                 _logger.LogError($"{result.TimeStamp} :: NotHealthy {_endpoint.Url} : {result.Message}");
             }
         }
