@@ -42,14 +42,9 @@ namespace EpMon.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<EpMonContext>();
-            
-            services.Configure<IISServerOptions>(options =>
-            {
-                options.AutomaticAuthentication = false;
-            });
 
             services.AddStartupJob<MigrateDatabaseJob>();
-
+                       
             services.AddHttpClient("default").ConfigurePrimaryHttpMessageHandler(messageHandler =>
             {
                 var handler = new HttpClientHandler();

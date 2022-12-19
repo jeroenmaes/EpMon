@@ -19,7 +19,6 @@ namespace EpMon.Web
             WebHost.CreateDefaultBuilder(args)                
                 .CaptureStartupErrors(true) // the default
                 .UseSetting("detailedErrors", "true")
-                .UseIIS()
                 .UseStartup<Startup>();
     }
 }
