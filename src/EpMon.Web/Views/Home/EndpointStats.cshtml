@@ -34,7 +34,7 @@
                     </tr>
                     <tr>
                         <td>Last Checked</td>
-                        <td>@Model.LastStat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))</td>
+                        <td>@Model.LastStat.TimeStamp.ToLocalTime().ToString()</td>
                     </tr>
                 }
             }
@@ -114,7 +114,7 @@
                 <tr>
                     <td scope="row">@stat.IsHealthy</td>
                     <td>@stat.Status</td>
-                    <td>@stat.TimeStamp.ToLocalTime().ToString(new CultureInfo("nl-BE"))</td>
+                    <td>@stat.TimeStamp.ToLocalTime().ToString()</td>
                     <td>@stat.ResponseTime ms</td>
                     <td>@jsonString</td>
                 </tr>
