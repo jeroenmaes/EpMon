@@ -6,7 +6,7 @@ namespace EpMon.Web.Api
 {
     public class MetaController : BaseApiController
     {
-        [HttpGet("/info")]
+        [HttpGet("/api/info")]
         public ActionResult<MetaInfoDto> Info()
         {
             var assembly = typeof(Startup).Assembly;

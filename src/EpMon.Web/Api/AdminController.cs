@@ -15,7 +15,7 @@ namespace EpMon.Web.Api
             _logger = logger;
         }
 
-        [HttpPost("/shutdown")]
+        [HttpPost("/api/shutdown")]
         public ActionResult Shutdown()
         {
             _logger.LogInformation("Stopping Application...");
