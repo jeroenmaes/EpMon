@@ -13,8 +13,9 @@ namespace EpMon.Web.Api
 
             var creationDate = System.IO.File.GetCreationTime(assembly.Location);
             var version = FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
+            var appName = assembly.GetName().Name.Split(',')[0];
 
-            return Ok(new MetaInfoDto{ VersionInfo = version, BuildDate = creationDate});
+            return Ok(new MetaInfoDto{ VersionInfo = version, BuildDate = creationDate, AppName = appName });
         }
     }
 }

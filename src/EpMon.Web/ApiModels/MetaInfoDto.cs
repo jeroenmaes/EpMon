@@ -6,5 +6,6 @@ namespace EpMon.Web.ApiModels
     {
         public DateTime BuildDate { get; set; }
         public string VersionInfo { get; set; }
+        public string AppName { get; set; }
     }
 }
