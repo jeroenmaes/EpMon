@@ -15,6 +15,8 @@ using System.Threading;
 using EpMon.Publisher;
 using Microsoft.Extensions.Hosting;
 using EpMon.Web.Api;
+using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
 
 namespace EpMon.Web
 {
@@ -78,6 +80,29 @@ namespace EpMon.Web
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "EpMon API", Version = "v1" });
+
+                c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+                {
+                    Description = "ApiKey must appear in header",
+                    Type = SecuritySchemeType.ApiKey,
+                    Name = "X-API-Key",
+                    In = ParameterLocation.Header,
+                    Scheme = "ApiKeyScheme"
+                });
+                var key = new OpenApiSecurityScheme()
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "ApiKey"
+                    },
+                    In = ParameterLocation.Header
+                };
+                var requirement = new OpenApiSecurityRequirement
+                    {
+                             { key, new List<string>() }
+                    };
+                c.AddSecurityRequirement(requirement);
             });
 
             services.AddScheduledJobs();
